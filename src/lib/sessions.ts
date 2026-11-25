@@ -8,20 +8,51 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { spots as seedSpots } from '@/data/seed';
 import type { LiveSession, SessionMember } from '@/types';
 
 const STORAGE_KEY = 'sesh-sessions';
+// A session older than this is treated as finished.
+const SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000;
 
 type SessionsMap = Record<string, LiveSession>;
 
+// SAMPLE DATA: anonymous skaters so the map and spot pages show activity.
+// Remove this when live sessions come from the database.
+function seedSessions(): SessionsMap {
+  const map: SessionsMap = {};
+  seedSpots.forEach((spot) => {
+    if (spot.liveCount <= 0) return;
+    map[spot.id] = {
+      id: `session-seed-${spot.id}`,
+      spotId: spot.id,
+      startedAt: new Date(
+        Date.now() - (10 + spot.liveCount * 7) * 60000
+      ).toISOString(),
+      members: Array.from({ length: spot.liveCount }, (_, i) => ({
+        id: `seed-${spot.id}-${i}`,
+        named: false,
+      })),
+    };
+  });
+  return map;
+}
+
 function readSessions(): SessionsMap {
   if (typeof window === 'undefined') return {};
+  let stored: SessionsMap = {};
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as SessionsMap) : {};
+    stored = raw ? (JSON.parse(raw) as SessionsMap) : {};
   } catch {
-    return {};
+    stored = {};
   }
+  const fresh: SessionsMap = {};
+  Object.keys(stored).forEach((spotId) => {
+    const age = Date.now() - new Date(stored[spotId].startedAt).getTime();
+    if (age < SESSION_MAX_AGE_MS) fresh[spotId] = stored[spotId];
+  });
+  return { ...seedSessions(), ...fresh };
 }
 
 function writeSessions(s: SessionsMap) {

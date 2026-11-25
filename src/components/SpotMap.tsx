@@ -89,6 +89,33 @@ export default function SpotMap({
     });
   }
 
+  function escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function popupHtml(spot: Spot): string {
+    const live = spot.liveCount > 0;
+    return `<div style="min-width:180px;">
+      <div style="font-weight:600;font-size:14px;margin-bottom:2px;">${escapeHtml(spot.name)}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">${escapeHtml(spot.area)}</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:10px;">
+        <span style="width:8px;height:8px;border-radius:9999px;background:${
+          live ? '#16A34A' : 'var(--muted)'
+        };"></span>
+        ${live ? `${spot.liveCount} skating now` : 'No one yet'}
+      </div>
+      <a href="/spot/${spot.id}" data-sesh-popup-link="${spot.id}" style="
+        display:inline-flex;align-items:center;justify-content:center;
+        background:#FF5A1F;color:#FFFFFF;text-decoration:none;
+        padding:6px 14px;border-radius:9999px;font-size:13px;font-weight:600;
+      ">View spot</a>
+    </div>`;
+  }
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -130,23 +157,7 @@ export default function SpotMap({
           className: 'sesh-popup',
           closeButton: false,
           offset: [0, -14],
-        }).setContent(
-          `<div style="min-width:180px;">
-            <div style="font-weight:600;font-size:14px;margin-bottom:2px;">${spot.name}</div>
-            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">${spot.area}</div>
-            <div style="display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:10px;">
-              <span style="width:8px;height:8px;border-radius:9999px;background:${
-                spot.liveCount > 0 ? '#16A34A' : 'var(--muted)'
-              };"></span>
-              ${spot.liveCount > 0 ? `${spot.liveCount} skating now` : 'No one yet'}
-            </div>
-            <a href="/spot/${spot.id}" data-sesh-popup-link="${spot.id}" style="
-              display:inline-flex;align-items:center;justify-content:center;
-              background:#FF5A1F;color:#FFFFFF;text-decoration:none;
-              padding:6px 14px;border-radius:9999px;font-size:13px;font-weight:600;
-            ">View spot</a>
-          </div>`
-        );
+        }).setContent(popupHtml(spot));
         marker.bindPopup(popup);
         popupsRef.current[spot.id] = popup;
       } else {

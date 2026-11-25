@@ -18,8 +18,8 @@ type State =
   | { status: 'ok'; data: WeatherResult };
 
 export default function ConditionsCard({ spot }: { spot: Spot }) {
-  const { settings } = useSettings();
-  const [state, setState] = useState<State>({ status: 'idle' });
+  const { settings, ready } = useSettings();
+  const [state, setState] = useState<State>({ status: 'loading' });
 
   const load = useCallback(async () => {
     setState({ status: 'loading' });
@@ -32,12 +32,15 @@ export default function ConditionsCard({ spot }: { spot: Spot }) {
   }, [spot.lat, spot.lng, spot.id]);
 
   useEffect(() => {
+    // Wait until saved settings are loaded so low data mode is respected
+    // before any weather request is made.
+    if (!ready) return;
     if (settings.lowDataMode) {
       setState({ status: 'idle' });
       return;
     }
     load();
-  }, [load, settings.lowDataMode]);
+  }, [load, ready, settings.lowDataMode]);
 
   const surface =
     state.status === 'ok'

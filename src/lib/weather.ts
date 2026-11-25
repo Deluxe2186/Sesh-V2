@@ -42,7 +42,7 @@ export async function fetchWeather(
     `?latitude=${lat}&longitude=${lng}` +
     `&current=temperature_2m,precipitation,weather_code` +
     `&hourly=precipitation_probability` +
-    `&forecast_days=1&timezone=auto`;
+    `&forecast_days=2&timezone=auto`;
 
   const res = await fetch(url);
   if (!res.ok) throw new Error('Weather request failed');
@@ -53,12 +53,14 @@ export async function fetchWeather(
   const description = describeCode(weatherCode);
 
   const hourlyProb: number[] = data.hourly?.precipitation_probability ?? [];
-  const nowIdx = data.current?.time
-    ? Math.max(
-        0,
-        (data.hourly?.time ?? []).indexOf(data.current.time)
-      )
-    : 0;
+  // current.time can be on a 15-minute step (e.g. 10:15) while the hourly
+  // list is on the hour, so match the current hour.
+  const hourTimes: string[] = data.hourly?.time ?? [];
+  const currentHour =
+    typeof data.current?.time === 'string'
+      ? `${data.current.time.slice(0, 13)}:00`
+      : '';
+  const nowIdx = Math.max(0, hourTimes.indexOf(currentHour));
   const next3 = hourlyProb.slice(nowIdx, nowIdx + 3).filter(
     (v) => typeof v === 'number'
   );

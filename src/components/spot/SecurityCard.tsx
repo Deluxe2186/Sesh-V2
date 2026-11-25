@@ -3,7 +3,7 @@
 import { Shield, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCallback, useEffect, useState } from 'react';
-import { reportSecurity } from '@/lib/api';
+import { getStoredReports, reportSecurity } from '@/lib/api';
 import { relativeTime } from '@/lib/time';
 import type { SecurityReport, SecurityReportType, Spot } from '@/types';
 
@@ -29,7 +29,7 @@ export default function SecurityCard({ spot }: { spot: Spot }) {
   );
 
   useEffect(() => {
-    setReports(spot.securityReports);
+    setReports([...getStoredReports(spot.id), ...spot.securityReports]);
   }, [spot]);
 
   const handleReport = useCallback(
