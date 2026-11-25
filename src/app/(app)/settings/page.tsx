@@ -34,7 +34,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Toggle } from '@/components/ui/toggle';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { getCachedSpotsCount, clearOfflineCache } from '@/lib/offlineCache';
@@ -335,10 +334,10 @@ export default function SettingsPage() {
                 Hide yourself completely. You are not counted in any session.
               </p>
             </div>
-            <Toggle
-              pressed={settings.ghostMode}
-              onPressedChange={(value) => toggle('ghostMode')}
-              className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+            <Switch
+              checked={settings.ghostMode}
+              onCheckedChange={() => toggle('ghostMode')}
+              aria-label="Ghost mode"
             />
           </div>
 
@@ -350,10 +349,10 @@ export default function SettingsPage() {
                 Everyone nearby is counted. Turn this on to appear in the list with your initials, stance and level.
               </p>
             </div>
-            <Toggle
-              pressed={settings.showByName}
-              onPressedChange={(value) => toggle('showByName')}
-              className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+            <Switch
+              checked={settings.showByName}
+              onCheckedChange={() => toggle('showByName')}
+              aria-label="Show me by name in sessions"
             />
           </div>
 
@@ -369,6 +368,7 @@ export default function SettingsPage() {
               checked={settings.autoJoin}
               onCheckedChange={handleAutoJoinToggle}
               disabled={settings.ghostMode}
+              aria-label="Auto-join sessions near a spot"
             />
           </div>
 
@@ -416,10 +416,10 @@ export default function SettingsPage() {
                 </p>
               </div>
             </div>
-            <Toggle
-              pressed={settings.lowDataMode}
-              onPressedChange={(value) => toggle('lowDataMode')}
-              className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+            <Switch
+              checked={settings.lowDataMode}
+              onCheckedChange={() => toggle('lowDataMode')}
+              aria-label="Low data mode"
             />
           </div>
 
