@@ -1,6 +1,6 @@
 'use client';
 
-import { CloudRain, CloudSun, Loader2, Thermometer } from 'lucide-react';
+import { CloudRain, CloudSun, Thermometer } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/lib/settings';

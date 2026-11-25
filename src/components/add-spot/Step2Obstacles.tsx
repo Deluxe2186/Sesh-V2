@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
   StepForward, // Stairs
   ArrowUpRight, // Ramp
@@ -15,18 +14,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage,
-} from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
+import { Form, FormField, FormItem, FormLabel, FormDescription, FormMessage } from '@/components/ui/form';
 
 const OBSTACLES = [
   { id: 'Stairs', label: 'Stairs', icon: StepForward },

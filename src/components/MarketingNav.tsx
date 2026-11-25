@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 export default function MarketingNav() {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center px-6">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center px-4 sm:px-6">
         <Link href="/" className="text-2xl font-bold font-display">
           sesh<span className="text-accent">.</span>
         </Link>
@@ -25,8 +25,10 @@ export default function MarketingNav() {
             For brands
           </a>
         </nav>
-        <div className="ml-auto flex items-center gap-3">
-          <ThemeQuickToggle />
+        <div className="ml-auto flex items-center gap-1 sm:gap-3">
+          <div className="hidden sm:block">
+            <ThemeQuickToggle />
+          </div>
           <Link href="/login">
             <Button variant="ghost" className="rounded-full">
               Log in
