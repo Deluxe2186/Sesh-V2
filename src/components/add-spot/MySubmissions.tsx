@@ -119,8 +119,8 @@ export default function MySubmissions({ className }: MySubmissionsProps) {
         {[1, 2, 3].map((i) => (
           <Card key={i} className="animate-pulse">
             <CardContent className="pt-6">
-              <div className="h-4 w-1/4 bg-muted rounded" />
-              <div className="mt-4 h-3 w-1/2 bg-muted rounded" />
+              <div className="h-4 w-1/4 bg-secondary rounded" />
+              <div className="mt-4 h-3 w-1/2 bg-secondary rounded" />
             </CardContent>
           </Card>
         ))}

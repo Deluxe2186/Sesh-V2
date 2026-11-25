@@ -274,7 +274,7 @@ export default function Step4Review({
             <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {formData.files.map((file, index) => (
                 <div key={`${file.name}-${index}`} className="rounded-lg border bg-surface p-2">
-                  <div className="aspect-square rounded-[8px] overflow-hidden bg-muted mb-2">
+                  <div className="aspect-square rounded-[8px] overflow-hidden bg-secondary mb-2">
                     <img
                       src={file.thumbnail}
                       alt={file.name}

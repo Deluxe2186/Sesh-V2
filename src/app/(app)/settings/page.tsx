@@ -270,7 +270,7 @@ export default function SettingsPage() {
 
             {/* Auto Theme Rules - shown when Auto is selected */}
             {settings.theme === 'auto' && (
-              <div className="rounded-lg border bg-muted/50 p-4 space-y-3">
+              <div className="rounded-lg border bg-secondary p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Auto rules</span>
                   <Badge variant="outline" className="text-xs">
@@ -373,16 +373,16 @@ export default function SettingsPage() {
           </div>
 
           {/* What Others Can See Preview */}
-          <div className="rounded-lg border bg-muted/20 p-4">
+          <div className="rounded-lg border bg-surface p-4">
             <p className="text-sm font-medium mb-3">What others can see</p>
             <div className={cn(
               'rounded-lg p-3 text-sm',
-              privacyPreview.variant === 'destructive' && 'bg-destructive/20 text-destructive border border-destructive/30',
-              privacyPreview.variant === 'default' && 'bg-accent/20 text-accent border border-accent/30',
-              privacyPreview.variant === 'secondary' && 'bg-muted/30 text-foreground border border-muted/30'
+              privacyPreview.variant === 'destructive' && 'bg-destructive/10 text-foreground border border-destructive/40',
+              privacyPreview.variant === 'default' && 'bg-accent/10 text-foreground border border-accent/40',
+              privacyPreview.variant === 'secondary' && 'bg-secondary text-foreground border border-border'
             )}>
               <p className="font-medium">{privacyPreview.title}</p>
-              <p className="mt-1 text-xs opacity-90">{privacyPreview.description}</p>
+              <p className="mt-1 text-xs text-muted">{privacyPreview.description}</p>
             </div>
             <p className="mt-3 text-xs text-muted">
               Your exact position is never shown to other skaters.
@@ -406,7 +406,7 @@ export default function SettingsPage() {
           {/* Low Data Mode */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
                 <WifiOff className="h-5 w-5 text-muted" />
               </div>
               <div>

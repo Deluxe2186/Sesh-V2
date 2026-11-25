@@ -253,7 +253,7 @@ export default function Step3Proof({
       </div>
 
       {/* Data Usage */}
-      <div className="rounded-lg bg-muted/50 p-4">
+      <div className="rounded-lg bg-secondary p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-accent" />
@@ -288,7 +288,7 @@ export default function Step3Proof({
                 )}
               >
                 {/* Thumbnail */}
-                <div className="aspect-square rounded-[8px] overflow-hidden bg-muted">
+                <div className="aspect-square rounded-[8px] overflow-hidden bg-secondary">
                   {file.thumbnail ? (
                     <img
                       src={file.thumbnail}
