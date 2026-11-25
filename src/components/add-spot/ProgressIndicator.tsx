@@ -26,7 +26,7 @@ export default function ProgressIndicator({
       aria-label="Add spot progress"
     >
       {/* Progress bar background */}
-      <div className="relative h-1 bg-muted rounded-full overflow-hidden">
+      <div className="relative h-1 bg-secondary rounded-full overflow-hidden">
         <div
           className="h-full bg-accent transition-all duration-300"
           style={{

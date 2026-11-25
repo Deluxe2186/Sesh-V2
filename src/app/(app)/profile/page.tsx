@@ -403,7 +403,7 @@ export default function ProfilePage() {
                   className="block rounded-[12px] border bg-surface p-3 transition-colors hover:border-accent"
                 >
                   <div className="flex gap-3">
-                    <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[8px] bg-muted" />
+                    <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[8px] bg-secondary" />
                     <div className="min-w-0 flex-1">
                       <h3 className="truncate font-semibold font-display">{spot.name}</h3>
                       <p className="mt-0.5 flex items-center gap-1 text-sm text-muted">
@@ -475,7 +475,7 @@ export default function ProfilePage() {
         </CardHeader>
         <CardContent className="pt-0 space-y-4">
           {/* Weekly challenges */}
-          <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/50">
+          <div className="flex items-center justify-between p-4 rounded-lg border bg-secondary">
             <div>
               <p className="font-medium">Weekly challenges</p>
               <p className="text-sm text-muted">
@@ -492,7 +492,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Avatar and board customization */}
-          <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/50">
+          <div className="flex items-center justify-between p-4 rounded-lg border bg-secondary">
             <div>
               <p className="font-medium">Avatar and board customization</p>
               <p className="text-sm text-muted">
