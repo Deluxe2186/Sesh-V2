@@ -1,67 +1,252 @@
+'use client';
+
+import { useState, useMemo } from 'react';
+import { MapPin, Sunrise, Sun, Sunset, Moon, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { MapPin } from 'lucide-react';
-import HeatChart from '@/components/HeatChart';
-import SpotMapClient from '@/components/SpotMapClient';
 import { getSpots } from '@/lib/api';
+import type { Spot, BusyByTime } from '@/types';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import HeatmapMapClient from '@/components/HeatmapMapClient';
+import { cn } from '@/lib/utils';
 
-export default async function HeatmapPage() {
-  const spots = await getSpots();
-  const totalVisits = spots.reduce((sum, s) => sum + s.weeklyVisits, 0);
+const TIME_OF_DAY_OPTIONS = [
+  { value: 'morning' as keyof BusyByTime, label: 'Morning', icon: Sunrise },
+  { value: 'afternoon' as keyof BusyByTime, label: 'Afternoon', icon: Sun },
+  { value: 'evening' as keyof BusyByTime, label: 'Evening', icon: Sunset },
+  { value: 'night' as keyof BusyByTime, label: 'Night', icon: Moon },
+] as const;
 
-  // Deterministic distribution across the week derived from weekly visits.
-  const weekly = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(
-    (day, i) => ({
-      day,
-      visits: Math.round(
-        (spots.reduce((sum, s) => sum + s.weeklyVisits, 0) / 7) *
-          (i >= 4 ? 1.5 : 0.75)
-      ),
-    })
-  );
+const WEEKDAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-  const busiest = [...spots].sort((a, b) => b.weeklyVisits - a.weeklyVisits);
+export default function HeatmapPage() {
+  const [spots, setSpots] = useState<Spot[]>([]);
+  const [timeOfDay, setTimeOfDay] = useState<keyof BusyByTime>('evening');
+  const [isWeekend, setIsWeekend] = useState(false);
+  const [selectedSpotId, setSelectedSpotId] = useState<string | null>(null);
+
+  // Load spots
+  const loadSpots = async () => {
+    const spotsData = await getSpots();
+    setSpots(spotsData);
+  };
+
+  // We need to trigger loading on mount
+  if (typeof window !== 'undefined' && spots.length === 0) {
+    loadSpots();
+  }
+
+  // Determine the busiest spot for the current time filter
+  const busiestSpot = useMemo(() => {
+    if (spots.length === 0) return null;
+
+    return spots.reduce((busiest, spot) => {
+      const timeVisits = spot.busyByTime[timeOfDay];
+      // If weekend, average Saturday and Sunday from busyByDay
+      const dayVisits = isWeekend
+        ? (spot.busyByDay[5] + spot.busyByDay[6]) / 2
+        : spot.busyByDay.slice(0, 5).reduce((a, b) => a + b, 0) / 5;
+
+      const weight = isWeekend ? 0.7 : 0.3;
+      const effectiveVisits = timeVisits * weight + dayVisits * (1 - weight);
+      const currentBusiestVisits = busiest.busyByTime[timeOfDay];
+      const currentDayVisits = isWeekend
+        ? (busiest.busyByDay[5] + busiest.busyByDay[6]) / 2
+        : busiest.busyByDay.slice(0, 5).reduce((a, b) => a + b, 0) / 5;
+      const currentEffectiveVisits = currentBusiestVisits * weight + currentDayVisits * (1 - weight);
+
+      return effectiveVisits > currentEffectiveVisits ? spot : busiest;
+    }, spots[0]);
+  }, [spots, timeOfDay, isWeekend]);
+
+  // Top 5 spots ranked by effective visits for current filter
+  const topSpots = useMemo(() => {
+    if (spots.length === 0) return [];
+
+    const weight = isWeekend ? 0.7 : 0.3;
+
+    return [...spots]
+      .map((spot) => {
+        const timeVisits = spot.busyByTime[timeOfDay];
+        const dayVisits = isWeekend
+          ? (spot.busyByDay[5] + spot.busyByDay[6]) / 2
+          : spot.busyByDay.slice(0, 5).reduce((a, b) => a + b, 0) / 5;
+        const effectiveVisits = timeVisits * weight + dayVisits * (1 - weight);
+        return { spot, effectiveVisits };
+      })
+      .sort((a, b) => b.effectiveVisits - a.effectiveVisits)
+      .slice(0, 5)
+      .map((item, index) => ({
+        ...item.spot,
+        rank: index + 1,
+        effectiveVisits: item.effectiveVisits,
+      }));
+  }, [spots, timeOfDay, isWeekend]);
+
+  // Generate the description sentence
+  const description = useMemo(() => {
+    if (!busiestSpot) return 'Select a time to see the busiest spots.';
+
+    const timeLabel = TIME_OF_DAY_OPTIONS.find(t => t.value === timeOfDay)?.label || timeOfDay;
+    const dayLabel = isWeekend ? 'Weekends' : 'Weekdays';
+
+    return `${timeLabel} is the busiest time at ${busiestSpot.name} on ${dayLabel}.`;
+  }, [busiestSpot, timeOfDay, isWeekend]);
+
+  // If spots aren't loaded yet, show loading state
+  if (spots.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div className="mb-1">
+          <h1 className="text-2xl font-bold font-display">Heatmap</h1>
+          <p className="mt-1 text-sm text-muted">Loading Lagos skate spots…</p>
+        </div>
+        <div className="rounded-[12px] border bg-surface p-8 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-accent mx-auto mb-4">
+            <div className="h-6 w-6 border-4 border-accent border-t-transparent rounded-full animate-spin" />
+          </div>
+          <p className="text-sm text-muted">Loading heatmap data…</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div>
+    <div className="space-y-6">
+      {/* Header */}
       <div className="mb-1">
         <h1 className="text-2xl font-bold font-display">Heatmap</h1>
         <p className="mt-1 text-sm text-muted">
-          {totalVisits} visits across {spots.length} Lagos spots this week
+          Skate activity across {spots.length} Lagos spots
         </p>
       </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-4">
-        <div className="rounded-[12px] border bg-surface p-5">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
-            Visits by day
-          </h2>
-          <HeatChart data={weekly} />
-        </div>
-        <div className="rounded-[12px] border bg-surface p-5">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
-            Busiest spots this week
-          </h2>
-          <ol className="flex flex-col gap-2">
-            {busiest.slice(0, 5).map((spot, i) => (
-              <li key={spot.id}>
-                <Link
-                  href={`/spot/${spot.id}`}
-                  className="flex items-center gap-3 rounded-full border px-4 py-2.5 text-sm hover:border-accent"
-                >
-                  <span className="w-5 font-bold text-accent">{i + 1}</span>
-                  <span className="font-medium">{spot.name}</span>
-                  <span className="ml-auto text-muted">
-                    {spot.weeklyVisits}
-                  </span>
-                </Link>
-              </li>
+      {/* Controls */}
+      <div className="rounded-[12px] border bg-surface p-5 space-y-4">
+        {/* Time of Day Selector */}
+        <div>
+          <p className="text-sm font-medium mb-3">Time of day</p>
+          <ToggleGroup
+            type="single"
+            value={timeOfDay}
+            onValueChange={(value) => setTimeOfDay(value as keyof BusyByTime)}
+            className="flex gap-2"
+          >
+            {TIME_OF_DAY_OPTIONS.map((option) => (
+              <ToggleGroupItem
+                key={option.value}
+                value={option.value}
+                className="flex items-center gap-1.5 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+              >
+                <option.icon className="h-4 w-4" />
+                {option.label}
+              </ToggleGroupItem>
             ))}
-          </ol>
+          </ToggleGroup>
         </div>
+
+        {/* Weekdays/Weekends Selector */}
+        <div>
+          <p className="text-sm font-medium mb-3">Day type</p>
+          <ToggleGroup
+            type="single"
+            value={isWeekend ? 'weekend' : 'weekday'}
+            onValueChange={(value) => setIsWeekend(value === 'weekend')}
+            className="flex gap-2"
+          >
+            <ToggleGroupItem
+              value="weekday"
+              className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+            >
+              <Calendar className="mr-2 h-4 w-4" />
+              Weekdays
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="weekend"
+              className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+            >
+              <Calendar className="mr-2 h-4 w-4" />
+              Weekends
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+
+        {/* Description Sentence */}
+        <p className="text-sm text-muted pt-2 border-t">
+          {description}
+        </p>
       </div>
 
-      <div className="mt-4">
-        <SpotMapClient spots={spots} height="420px" />
+      {/* Map and Top Spots */}
+      <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-6">
+        {/* Map */}
+        <div className="h-[500px] lg:h-[600px] rounded-[12px] border overflow-hidden relative">
+          <HeatmapMapClient
+            spots={spots}
+            timeOfDay={timeOfDay}
+            isWeekend={isWeekend}
+            selectedSpotId={selectedSpotId}
+            onSpotClick={setSelectedSpotId}
+            height="100%"
+          />
+
+          {/* Legend at bottom-left */}
+          <div className="absolute bottom-4 left-4 z-10 rounded-lg bg-background/95 backdrop-blur p-3 shadow-lg border">
+            <p className="text-xs font-medium mb-2">Activity Level</p>
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-20 rounded bg-gradient-to-r from-yellow-300 via-orange-300 to-orange-600" />
+              <div className="flex gap-4 text-xs text-muted">
+                <span>Quiet</span>
+                <span>Busy</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Top Spots This Week */}
+        <div className="space-y-4">
+          <Card className="rounded-[12px]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-accent" />
+                Top spots this week
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <ol className="flex flex-col gap-2">
+                {topSpots.map((spot) => (
+                  <li key={spot.id}>
+                    <button
+                      onClick={() => setSelectedSpotId(spot.id)}
+                      className={cn(
+                        'flex w-full items-center gap-3 rounded-full border px-4 py-2.5 text-sm text-left hover:border-accent transition-colors',
+                        selectedSpotId === spot.id && 'border-accent bg-accent/5'
+                      )}
+                    >
+                      <span className="w-5 font-bold text-accent">{spot.rank}</span>
+                      <span className="font-medium truncate">{spot.name}</span>
+                      <Badge variant="secondary" className="ml-auto text-xs">
+                        {Math.round(spot.effectiveVisits)} visits
+                      </Badge>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+            </CardContent>
+          </Card>
+
+          {/* Note under the map */}
+          <p className="text-center text-xs text-muted">
+            Activity is based on early data and grows as more skaters join.
+          </p>
+        </div>
       </div>
     </div>
   );
