@@ -19,6 +19,7 @@
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
   --ring: #ff5a1f;
+  --input: #d4d0c8;
   --live: #16a34a;
   --warning: #f59e0b;
   --danger: #dc2626;
@@ -44,6 +45,7 @@
   --destructive: #f87171;
   --destructive-foreground: #0e0e10;
   --ring: #ff5a1f;
+  --input: #3a3a3f;
   --live: #16a34a;
   --warning: #f59e0b;
   --danger: #f87171;
