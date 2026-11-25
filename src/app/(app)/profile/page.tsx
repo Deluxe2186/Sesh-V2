@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Edit, MapPin, Clock, Users, Plus, Check, X, Star, Target } from 'lucide-react';
+import { Edit, MapPin, Clock, Users, Plus, Check, Star, Target } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import { useSettings } from '@/lib/settings';

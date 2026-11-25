@@ -3,7 +3,7 @@
 import 'leaflet/dist/leaflet.css';
 
 import L from 'leaflet';
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import type { Spot, BusyByTime } from '@/types';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/lib/settings';

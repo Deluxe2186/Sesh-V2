@@ -162,3 +162,39 @@ input,
 .animate-fade-in {
   animation: fade-in 200ms ease-out;
 }
+
+/* ---- Phones and tablets (below 1024px) ---- */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: clip;
+}
+
+@media (max-width: 1023px) {
+  /* 16px minimum stops iOS Safari zooming into fields */
+  input,
+  select,
+  textarea,
+  [role='combobox'] {
+    font-size: 16px !important;
+  }
+
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    min-height: 44px;
+  }
+
+  /* Comfortable tap targets, without stretching switches, checkboxes or map controls */
+  button:not([role='switch']):not([role='checkbox']):not([role='radio']):not(.leaflet-container button) {
+    min-height: 44px;
+  }
+}
+
+/* Visible keyboard focus */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

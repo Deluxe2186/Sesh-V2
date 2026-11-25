@@ -56,7 +56,15 @@ export default function SpotMap({
 
     mapRef.current = map;
 
+    // The map can start hidden (phone list view). Re-measure when it appears.
+    const observer =
+      typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver(() => map.invalidateSize())
+        : null;
+    observer?.observe(containerRef.current);
+
     return () => {
+      observer?.disconnect();
       map.remove();
       mapRef.current = null;
       markersRef.current = {};

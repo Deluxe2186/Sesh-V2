@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { MapPin, Sunrise, Sun, Sunset, Moon, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
-import Link from 'next/link';
+import { MapPin, Sunrise, Sun, Sunset, Moon, Calendar } from 'lucide-react';
 import { getSpots } from '@/lib/api';
 import type { Spot, BusyByTime } from '@/types';
 import {
@@ -12,7 +11,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import HeatmapMapClient from '@/components/HeatmapMapClient';
 import { cn } from '@/lib/utils';

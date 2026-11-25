@@ -2,16 +2,28 @@
 
 import { Check, ChevronRight, MapPin } from 'lucide-react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import BestTimeCard from '@/components/spot/BestTimeCard';
 import ConditionsCard from '@/components/spot/ConditionsCard';
 import DevTools from '@/components/spot/DevTools';
+import MobileSessionBar from '@/components/spot/MobileSessionBar';
 import LiveSessionCard from '@/components/spot/LiveSessionCard';
 import RecentSessions from '@/components/spot/RecentSessions';
 import SecurityCard from '@/components/spot/SecurityCard';
 import PhotoPlaceholder from '@/components/PhotoPlaceholder';
 import { useSessions } from '@/lib/sessions';
 import type { Spot } from '@/types';
+
+// recharts is only needed on this page, so load it on demand.
+const BestTimeCard = dynamic(
+  () => import('@/components/spot/BestTimeCard'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[320px] animate-pulse rounded-[12px] border bg-surface" />
+    ),
+  }
+);
 
 export default function SpotDetail({ spot }: { spot: Spot }) {
   const { getLiveCount } = useSessions();
@@ -22,7 +34,7 @@ export default function SpotDetail({ spot }: { spot: Spot }) {
   }, [getLiveCount, spot.id]);
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-5xl pb-20 lg:pb-0">
       {/* Breadcrumb */}
       <nav className="mb-4 flex items-center gap-1 text-sm text-muted">
         <Link href="/explore" className="hover:text-foreground">
@@ -37,10 +49,10 @@ export default function SpotDetail({ spot }: { spot: Spot }) {
         <div className="flex flex-col gap-6 md:flex-row">
           {/* Gallery */}
           <div className="flex flex-1 gap-3">
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <PhotoPlaceholder label="" />
             </div>
-            <div className="flex w-32 flex-col gap-3">
+            <div className="hidden w-32 flex-col gap-3 sm:flex">
               <div className="h-[72px]">
                 <PhotoPlaceholder label="" />
               </div>
@@ -89,9 +101,9 @@ export default function SpotDetail({ spot }: { spot: Spot }) {
       </div>
 
       {/* Two columns */}
-      <div className="mt-6 flex gap-6">
+      <div className="mt-6 flex flex-col gap-6 lg:flex-row">
         {/* Main column */}
-        <div className="flex flex-1 flex-col gap-4">
+        <div className="order-2 flex min-w-0 flex-1 flex-col gap-4 lg:order-none">
           {/* About */}
           <div className="rounded-[12px] border bg-surface p-5">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
@@ -145,11 +157,13 @@ export default function SpotDetail({ spot }: { spot: Spot }) {
         </div>
 
         {/* Sidebar */}
-        <div className="flex w-[360px] shrink-0 flex-col gap-4">
+        <div className="order-1 flex w-full shrink-0 flex-col gap-4 lg:order-none lg:w-[360px]">
           <LiveSessionCard spotId={spot.id} />
           <DevTools spotId={spot.id} />
         </div>
       </div>
+
+      <MobileSessionBar spotId={spot.id} />
     </div>
   );
 }

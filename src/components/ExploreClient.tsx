@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, MapPin, Users, X, Zap } from 'lucide-react';
+import { Check, MapPin, X, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -68,6 +68,8 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
   const [sessionOpen, setSessionOpen] = useState(false);
   const [sessionSpot, setSessionSpot] = useState<string>(spots[0]?.id ?? '');
   const [starting, setStarting] = useState(false);
+  // Phones show the map or the list, not both
+  const [view, setView] = useState<'map' | 'list'>('map');
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 350);
@@ -143,9 +145,37 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
   }
 
   return (
-    <div className="flex h-[calc(100vh-64px)] gap-6">
+    <div className="relative flex h-[calc(100dvh-11rem-env(safe-area-inset-bottom))] flex-col gap-3 lg:h-[calc(100dvh-64px)] lg:flex-row lg:gap-6">
+      {/* Map | List switch (phones only) */}
+      <div
+        role="tablist"
+        aria-label="Spots view"
+        className="grid shrink-0 grid-cols-2 rounded-full border bg-surface p-1 lg:hidden"
+      >
+        {(['map', 'list'] as const).map((v) => (
+          <button
+            key={v}
+            type="button"
+            role="tab"
+            aria-selected={view === v}
+            onClick={() => setView(v)}
+            className={`min-h-[44px] rounded-full text-sm font-semibold ${
+              view === v
+                ? "bg-accent text-accent-foreground"
+                : "text-muted"
+            }`}
+          >
+            {v === 'map' ? "Map" : "List"}
+          </button>
+        ))}
+      </div>
+
       {/* Left panel */}
-      <aside className="flex w-[380px] shrink-0 flex-col gap-4 overflow-y-auto pr-1">
+      <aside
+        className={`min-h-0 w-full flex-1 flex-col gap-4 overflow-y-auto pr-1 lg:flex lg:w-[380px] lg:flex-none lg:shrink-0 ${
+          view === 'list' ? "flex" : "hidden"
+        }`}
+      >
         <div>
           <h1 className="text-2xl font-bold font-display">Spots near you</h1>
           <p className="mt-1 text-sm text-muted">Sorted by live activity</p>
@@ -159,7 +189,7 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
                 key={pill.id}
                 type="button"
                 onClick={() => togglePill(pill.id)}
-                className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
+                className={`min-h-[44px] rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors lg:min-h-0 ${
                   active
                     ? 'border-accent bg-accent text-accent-foreground'
                     : 'bg-surface text-muted hover:text-foreground'
@@ -275,7 +305,11 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
       </aside>
 
       {/* Map */}
-      <div className="relative flex-1">
+      <div
+        className={`relative min-h-0 flex-1 lg:block ${
+          view === 'map' ? "block" : "hidden"
+        }`}
+      >
         <SpotMapClient
           spots={mapSpots}
           selectedId={selectedId}
@@ -286,15 +320,16 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
           height="100%"
         />
 
-        <button
-          type="button"
-          onClick={() => setSessionOpen(true)}
-          className="absolute bottom-6 right-6 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-lg transition-transform hover:scale-[1.02]"
-        >
-          <Zap className="h-4 w-4" />
-          Start a session
-        </button>
       </div>
+
+      <button
+        type="button"
+        onClick={() => setSessionOpen(true)}
+        className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-30 inline-flex min-h-[48px] items-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-lg transition-transform hover:scale-[1.02] lg:absolute lg:bottom-6 lg:right-6 lg:min-h-0"
+      >
+        <Zap className="h-4 w-4" />
+        Start a session
+      </button>
 
       <Dialog open={sessionOpen} onOpenChange={setSessionOpen}>
         <DialogContent className="sm:max-w-md">

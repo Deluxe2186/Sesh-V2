@@ -37,7 +37,7 @@ const STEPS = [
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-[100dvh] flex-col">
       <MarketingNav />
 
       <main className="flex flex-1 flex-col">

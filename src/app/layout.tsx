@@ -1,21 +1,62 @@
 import type { Metadata } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import { AuthProvider } from '@/components/AuthProvider';
+import InstallBanner from '@/components/InstallBanner';
+import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import { SeshToaster } from '@/components/SeshToaster';
 import { SettingsProvider } from '@/lib/settings';
 import { SessionProvider } from '@/lib/sessions';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-inter',
+});
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  display: 'swap',
   variable: '--font-space-grotesk',
 });
 
+const TITLE = 'Sesh | Live skate spots in Lagos';
+const DESCRIPTION =
+  'Find live skate spots across Lagos. See which plazas, stairs and rails have crews skating right now.';
+
 export const metadata: Metadata = {
-  title: 'Sesh — Live skate spots in Lagos',
-  description:
-    'Find live skate spots across Lagos. See which plazas, stairs and rails have crews skating right now.',
+  title: { default: TITLE, template: '%s | Sesh' },
+  description: DESCRIPTION,
+  applicationName: 'Sesh',
+  manifest: '/manifest.webmanifest',
+  // viewport-fit=cover lets the app draw under the iPhone notch and home bar
+  viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
+  themeColor: '#FF5A1F',
+  appleWebApp: {
+    capable: true,
+    title: 'Sesh',
+    statusBarStyle: 'default',
+  },
+  icons: {
+    icon: [
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [{ url: '/icons/apple-touch-icon.png', sizes: '180x180' }],
+  },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    siteName: 'Sesh',
+    type: 'website',
+    images: [{ url: '/icons/icon-512.png', width: 512, height: 512 }],
+  },
+  twitter: {
+    card: 'summary',
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 const themeScript = `
@@ -61,6 +102,8 @@ export default function RootLayout({
             <SessionProvider>
               {children}
               <SeshToaster />
+              <InstallBanner />
+              <ServiceWorkerRegister />
             </SessionProvider>
           </SettingsProvider>
         </AuthProvider>

@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Plus, ListChecks } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
 import AddSpotWizard from '@/components/add-spot/AddSpotWizard';
 import MySubmissions from '@/components/add-spot/MySubmissions';
 

@@ -1,12 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Sun, Moon, Monitor, User, Mail, LogOut, Shield, Eye, Wifi, WifiOff, Trash2, Save, Clock, MapPin, Users, Settings as SettingsIcon } from 'lucide-react';
-import Link from 'next/link';
+import { Sun, Moon, Monitor, User, LogOut, Shield, Wifi, WifiOff, Trash2, Save, Settings as SettingsIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
 import { useSettings } from '@/lib/settings';
-import { getCurrentUser } from '@/lib/api';
 import type { User as UserType } from '@/types';
 import type { SeshUser } from '@/lib/auth';
 
@@ -37,11 +35,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Toggle } from '@/components/ui/toggle';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import { getCachedSpotsCount, clearOfflineCache, formatCacheSize } from '@/lib/offlineCache';
+import { getCachedSpotsCount, clearOfflineCache } from '@/lib/offlineCache';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 

@@ -10,7 +10,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-4 px-6 text-center">
       <span className="text-2xl font-bold font-display">
         sesh<span className="text-accent">.</span>
       </span>
