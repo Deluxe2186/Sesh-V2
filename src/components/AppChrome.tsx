@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LogOut, Search } from 'lucide-react';
+import { LogOut, Search, WifiOff } from 'lucide-react';
 import GhostModeToggle from '@/components/GhostModeToggle';
 import ThemeQuickToggle from '@/components/ThemeQuickToggle';
 import { useAuth } from '@/components/AuthProvider';
+import { useSettings } from '@/lib/settings';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Badge } from '@/components/ui/badge';
 
 const NAV_ITEMS = [
   { href: '/explore', label: 'Explore' },
@@ -27,6 +29,7 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logOut } = useAuth();
+  const { settings } = useSettings();
 
   const displayName = user?.name ?? 'Guest';
   const handle = user?.handle ?? 'guest';
@@ -80,6 +83,12 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
             />
           </div>
           <div className="ml-auto flex items-center gap-3">
+            {settings.lowDataMode && (
+              <Badge variant="secondary" className="gap-1 text-xs">
+                <WifiOff className="h-3 w-3" />
+                Low data
+              </Badge>
+            )}
             <GhostModeToggle />
             <ThemeQuickToggle />
             <DropdownMenu>

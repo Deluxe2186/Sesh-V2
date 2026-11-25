@@ -21,11 +21,20 @@ export const metadata: Metadata = {
 const themeScript = `
 (function() {
   try {
-    var mode = localStorage.getItem('sesh-theme') || 'light';
+    var raw = localStorage.getItem('sesh-settings');
+    var settings = raw ? JSON.parse(raw) : { theme: 'auto', themeAutoRules: { night: { start: '18:00', end: '06:00' } } };
+    var mode = settings.theme || 'auto';
     var theme = mode;
     if (mode === 'auto') {
       var h = new Date().getHours();
-      theme = (h >= 18 || h < 6) ? 'dark' : 'light';
+      var nightStart = 18;
+      var nightEnd = 6;
+      if (settings.themeAutoRules && settings.themeAutoRules.night) {
+        nightStart = parseInt(settings.themeAutoRules.night.start.split(':')[0], 10);
+        nightEnd = parseInt(settings.themeAutoRules.night.end.split(':')[0], 10);
+      }
+      // Night spans midnight, so check if hour >= nightStart OR hour < nightEnd
+      theme = (h >= nightStart || h < nightEnd) ? 'dark' : 'light';
     }
     document.documentElement.setAttribute('data-theme', theme);
   } catch (e) {
