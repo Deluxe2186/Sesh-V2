@@ -5,6 +5,9 @@ import type {
   Session,
   Skater,
   Spot,
+  SpotSubmission,
+  SubmissionFile,
+  SubmissionStatus,
   User,
 } from '@/types';
 
@@ -114,4 +117,109 @@ export async function getRecentSessions(
     };
   });
   return rows;
+}
+
+// Spot submission storage
+const SUBMISSIONS_KEY = 'sesh-spot-submissions';
+const DRAFTS_KEY = 'sesh-spot-drafts';
+
+function readSubmissions(): SpotSubmission[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(SUBMISSIONS_KEY);
+    return raw ? (JSON.parse(raw) as SpotSubmission[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeSubmissions(submissions: SpotSubmission[]) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(SUBMISSIONS_KEY, JSON.stringify(submissions));
+}
+
+function readDrafts(): SpotSubmission[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(DRAFTS_KEY);
+    return raw ? (JSON.parse(raw) as SpotSubmission[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeDrafts(drafts: SpotSubmission[]) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
+}
+
+export async function saveDraft(submission: SpotSubmission): Promise<SpotSubmission> {
+  const drafts = readDrafts();
+  const existingIndex = drafts.findIndex((d) => d.id === submission.id);
+  const now = new Date().toISOString();
+
+  const draftToSave: SpotSubmission = {
+    ...submission,
+    updatedAt: now,
+    status: 'ready_to_send',
+  };
+
+  if (existingIndex >= 0) {
+    drafts[existingIndex] = draftToSave;
+  } else {
+    drafts.push(draftToSave);
+  }
+
+  writeDrafts(drafts);
+  return draftToSave;
+}
+
+export async function submitSpot(submission: SpotSubmission): Promise<SpotSubmission> {
+  // Remove from drafts if it exists there
+  const drafts = readDrafts();
+  const filteredDrafts = drafts.filter((d) => d.id !== submission.id);
+  writeDrafts(filteredDrafts);
+
+  // Add to submissions
+  const submissions = readSubmissions();
+  const now = new Date().toISOString();
+
+  const submissionToSave: SpotSubmission = {
+    ...submission,
+    id: submission.id || `submission-${Date.now()}`,
+    userId: submission.userId || currentUser.id,
+    status: 'pending_review',
+    createdAt: submission.createdAt || now,
+    updatedAt: now,
+  };
+
+  submissions.push(submissionToSave);
+  writeSubmissions(submissions);
+
+  return submissionToSave;
+}
+
+export async function getUserSubmissions(userId: string): Promise<SpotSubmission[]> {
+  const submissions = readSubmissions();
+  const drafts = readDrafts();
+
+  const userSubmissions = submissions.filter((s) => s.userId === userId);
+  const userDrafts = drafts.filter((d) => d.userId === userId);
+
+  // Combine and sort by updatedAt desc
+  const all = [...userSubmissions, ...userDrafts].sort(
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  );
+
+  return all;
+}
+
+export async function getDraft(id: string): Promise<SpotSubmission | undefined> {
+  const drafts = readDrafts();
+  return drafts.find((d) => d.id === id);
+}
+
+export async function deleteDraft(id: string): Promise<void> {
+  const drafts = readDrafts();
+  writeDrafts(drafts.filter((d) => d.id !== id));
 }
