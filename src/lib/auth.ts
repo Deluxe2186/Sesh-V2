@@ -1,9 +1,13 @@
+import type { Level, Stance } from '@/types';
+
 export interface SeshUser {
   id: string;
   name: string;
   handle: string;
   email: string;
   shareLocation: boolean;
+  stance?: Stance;
+  level?: Level;
 }
 
 interface StoredSession {

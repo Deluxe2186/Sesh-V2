@@ -22,7 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useSessions } from '@/lib/sessions';
+import { useSessions, SELF_ID } from '@/lib/sessions';
+import { useSettings } from '@/lib/settings';
 import { useAuth } from '@/components/AuthProvider';
 import type { Obstacle, Spot } from '@/types';
 import { toast } from 'sonner';
@@ -54,7 +55,8 @@ function CardSkeleton() {
 
 export default function ExploreClient({ spots }: { spots: Spot[] }) {
   const router = useRouter();
-  const { sessions } = useSessions();
+  const { sessions, startSession } = useSessions();
+  const { settings } = useSettings();
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [activePills, setActivePills] = useState<Set<FilterId>>(
@@ -112,14 +114,29 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spots, activePills, sessions]);
 
+  // Map markers use the same live counts as the list, so both always agree.
+  const mapSpots = useMemo(
+    () => filtered.map((s) => ({ ...s, liveCount: liveCountFor(s.id) })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [filtered, sessions]
+  );
+
   function handleStartSession() {
     if (!sessionSpot) return;
+    if (settings.ghostMode) {
+      toast.error('Ghost mode is on. Turn it off to start a session.');
+      return;
+    }
     setStarting(true);
-    const { startSession: start } = useSessionsRef.current;
-    start(sessionSpot, {
-      id: 'self',
-      named: false,
+    const named = settings.showByName;
+    startSession(sessionSpot, {
+      id: SELF_ID,
+      named,
+      ...(named && user
+        ? { name: user.name, stance: user.stance, level: user.level }
+        : {}),
     });
+    setSessionOpen(false);
     toast.success('Session started');
     router.push(`/spot/${sessionSpot}`);
     setStarting(false);
@@ -260,7 +277,7 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
       {/* Map */}
       <div className="relative flex-1">
         <SpotMapClient
-          spots={filtered}
+          spots={mapSpots}
           selectedId={selectedId}
           hoveredId={hoveredId}
           onSelect={(id) => setSelectedId(id)}

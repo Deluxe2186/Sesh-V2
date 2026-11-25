@@ -11,6 +11,24 @@ import type {
 // Mutable in-memory copy so security reports persist during the session.
 let spots: Spot[] = seedSpots.map((s) => ({ ...s }));
 
+// Reports are also saved in the browser so they survive page loads and
+// navigation (the server renders spots from the seed data each time).
+const REPORTS_KEY = 'sesh-security-reports';
+
+function readStoredReports(): Record<string, SecurityReport[]> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = window.localStorage.getItem(REPORTS_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, SecurityReport[]>) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function getStoredReports(spotId: string): SecurityReport[] {
+  return readStoredReports()[spotId] ?? [];
+}
+
 export async function getSpots(): Promise<Spot[]> {
   return spots;
 }
@@ -50,6 +68,15 @@ export async function reportSecurity(
     type,
     at: new Date().toISOString(),
   };
+  if (typeof window !== 'undefined') {
+    try {
+      const all = readStoredReports();
+      all[spotId] = [report, ...(all[spotId] ?? [])];
+      window.localStorage.setItem(REPORTS_KEY, JSON.stringify(all));
+    } catch {
+      // Storage unavailable: keep the in-memory copy only.
+    }
+  }
   spots = spots.map((s) =>
     s.id === spotId
       ? { ...s, securityReports: [report, ...s.securityReports] }

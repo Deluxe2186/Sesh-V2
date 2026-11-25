@@ -13,7 +13,6 @@ import {
 } from 'recharts';
 import type { Spot } from '@/types';
 
-const TIME_LABELS = ['Morning', 'Afternoon', 'Evenning', 'Night'] as const;
 const TIME_KEYS = ['morning', 'afternoon', 'evening', 'night'] as const;
 const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
 

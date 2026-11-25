@@ -1,6 +1,6 @@
 'use client';
 
-import { Ghost, LogOut, Skateboarding, Users } from 'lucide-react';
+import { Ghost, LogOut, User, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/AuthProvider';
@@ -108,7 +108,7 @@ export default function LiveSessionCard({ spotId }: { spotId: string }) {
               }`}
               title={a.named ? a.name : 'Anonymous skater'}
             >
-              {a.named ? a.initials : <Skateboarding className="h-4 w-4" />}
+              {a.named ? a.initials : <User className="h-4 w-4" />}
             </div>
           ))}
         </div>
