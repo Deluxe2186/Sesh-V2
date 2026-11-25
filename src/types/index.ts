@@ -6,7 +6,8 @@ export type Obstacle =
   | 'Gap'
   | 'Flatground'
   | 'Bank'
-  | 'Manual pad';
+  | 'Manual pad'
+  | 'Bowl';
 
 export type Surface = 'Smooth' | 'Average' | 'Rough';
 
@@ -92,3 +93,42 @@ export interface Session {
 }
 
 export interface User extends Skater {}
+
+export type SubmissionStatus = 'draft' | 'ready_to_send' | 'pending_review' | 'approved';
+
+export interface SubmissionFile {
+  name: string;
+  originalSize: number;
+  compressedSize: number;
+  thumbnail: string; // base64 data URL, max 200px
+  type: 'image' | 'video';
+  duration?: number; // for video, in seconds
+}
+
+export interface SpotSubmission {
+  id: string;
+  userId: string;
+  status: SubmissionStatus;
+  createdAt: string;
+  updatedAt: string;
+  // Step 1: Basics
+  name: string;
+  area: string;
+  howToFind: string;
+  description: string;
+  surface: 'Smooth' | 'Average' | 'Rough';
+  shelter: 'Open' | 'Partly covered' | 'Covered';
+  bestTime: string;
+  securityLevel: 'Low' | 'Medium' | 'High';
+  securityNote: string;
+  lat: number;
+  lng: number;
+  approximateLocation: boolean;
+  // Step 2: Obstacles
+  obstacles: string[]; // Obstacle[] + custom
+  customObstacle: string;
+  // Step 3: Proof
+  files: SubmissionFile[];
+  // Computed
+  totalDataMB: number;
+}
