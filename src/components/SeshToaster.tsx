@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Toaster as Sonner } from 'sonner';
 
-export function Toaster() {
+export function SeshToaster() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
