@@ -82,14 +82,53 @@ function showSavedToast() {
   toast.success('Saved', { duration: 1500 });
 }
 
+// Helper to compute and apply theme to document
+function applyTheme(settings: SeshSettings) {
+  if (typeof window === 'undefined') return;
+
+  let theme: 'light' | 'dark';
+
+  if (settings.theme === 'auto') {
+    const now = new Date();
+    const hours = now.getHours();
+
+    const nightStart = parseInt(settings.themeAutoRules.night.start.split(':')[0], 10);
+    const nightEnd = parseInt(settings.themeAutoRules.night.end.split(':')[0], 10);
+
+    // Night spans midnight, so check if hour >= nightStart OR hour < nightEnd
+    const isNight = hours >= nightStart || hours < nightEnd;
+
+    if (isNight) {
+      theme = settings.themeAutoRules.night.theme;
+    } else {
+      // Default to light for day and noon periods
+      theme = settings.themeAutoRules.day.theme;
+    }
+  } else {
+    theme = settings.theme;
+  }
+
+  document.documentElement.setAttribute('data-theme', theme);
+}
+
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<SeshSettings>(DEFAULT_SETTINGS);
   const [ready, setReady] = useState(false);
 
+  // Apply theme on initial load
   useEffect(() => {
-    setSettings(readSettings());
+    const loadedSettings = readSettings();
+    setSettings(loadedSettings);
+    applyTheme(loadedSettings);
     setReady(true);
   }, []);
+
+  // Apply theme whenever settings change
+  useEffect(() => {
+    if (ready) {
+      applyTheme(settings);
+    }
+  }, [settings, ready]);
 
   const update = useCallback((patch: PartialSettings) => {
     setSettings((prev) => {
