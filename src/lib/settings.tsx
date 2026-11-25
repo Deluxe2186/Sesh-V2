@@ -8,19 +8,42 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { toast } from 'sonner';
+
+export type ThemeMode = 'light' | 'dark' | 'auto';
+
+export interface ThemeAutoRules {
+  day: { start: string; end: string; theme: 'light' };
+  noon: { start: string; end: string; theme: 'light' };
+  night: { start: string; end: string; theme: 'dark' };
+}
 
 export interface SeshSettings {
   ghostMode: boolean;
   showByName: boolean;
   autoJoin: boolean;
   lowDataMode: boolean;
+  theme: ThemeMode;
+  themeAutoRules: ThemeAutoRules;
+  notifyWeeklyChallenges: boolean;
+  notifyCosmetics: boolean;
 }
+
+const DEFAULT_THEME_AUTO_RULES: ThemeAutoRules = {
+  day: { start: '06:00', end: '11:59', theme: 'light' },
+  noon: { start: '12:00', end: '17:59', theme: 'light' },
+  night: { start: '18:00', end: '05:59', theme: 'dark' },
+};
 
 const DEFAULT_SETTINGS: SeshSettings = {
   ghostMode: false,
   showByName: false,
   autoJoin: false,
   lowDataMode: false,
+  theme: 'auto',
+  themeAutoRules: DEFAULT_THEME_AUTO_RULES,
+  notifyWeeklyChallenges: false,
+  notifyCosmetics: false,
 };
 
 const STORAGE_KEY = 'sesh-settings';
@@ -42,6 +65,7 @@ function readSettings(): SeshSettings {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_SETTINGS;
     const parsed = JSON.parse(raw) as PartialSettings;
+    // Merge with defaults to handle new settings added after user's last visit
     return { ...DEFAULT_SETTINGS, ...parsed };
   } catch {
     return DEFAULT_SETTINGS;
@@ -51,6 +75,11 @@ function readSettings(): SeshSettings {
 function writeSettings(s: SeshSettings) {
   if (typeof window === 'undefined') return;
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+}
+
+// Helper to show "Saved" toast
+function showSavedToast() {
+  toast.success('Saved', { duration: 1500 });
 }
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
@@ -68,6 +97,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       writeSettings(next);
       return next;
     });
+    // Show saved toast after state update
+    setTimeout(showSavedToast, 0);
   }, []);
 
   const toggle = useCallback(
@@ -77,6 +108,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         writeSettings(next);
         return next;
       });
+      // Show saved toast after state update
+      setTimeout(showSavedToast, 0);
     },
     []
   );
