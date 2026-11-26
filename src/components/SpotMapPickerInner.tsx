@@ -108,7 +108,10 @@ export default function SpotMapPickerInner({
     if (lat !== null && lng !== null) {
       addMarker(map, lat, lng);
       if (!disabled) {
-        map.setView([lat, lng], map.getZoom(), { animate: true });
+        // Wait for map to be fully ready before setting view
+        map.whenReady(() => {
+          map.setView([lat, lng], map.getZoom(), { animate: true });
+        });
       }
     } else if (markerRef.current) {
       markerRef.current.remove();

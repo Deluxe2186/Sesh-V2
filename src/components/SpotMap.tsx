@@ -1,7 +1,7 @@
 import 'leaflet/dist/leaflet.css';
 
 import L from 'leaflet';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Spot } from '@/types';
 
 interface SpotMapProps {
@@ -32,6 +32,7 @@ export default function SpotMap({
   const onSelectRef = useRef(onSelect);
   const onHoverRef = useRef(onHover);
   const onViewRef = useRef(onView);
+  const [containerReady, setContainerReady] = useState(false);
 
   useEffect(() => {
     onSelectRef.current = onSelect;
@@ -39,8 +40,19 @@ export default function SpotMap({
     onViewRef.current = onView;
   });
 
+  // Initialize map once when container is ready
   useEffect(() => {
     if (mapRef.current || !containerRef.current) return;
+
+    // Ensure container has dimensions before initializing
+    const container = containerRef.current;
+    if (container.offsetHeight === 0 || container.offsetWidth === 0) return;
+
+    // Check if container is visible in viewport
+    const rect = container.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+
+    setContainerReady(true);
 
     const map = L.map(containerRef.current, {
       center: LAGOS_CENTER,
@@ -59,13 +71,19 @@ export default function SpotMap({
     // The map can start hidden (phone list view). Re-measure when it appears.
     const observer =
       typeof ResizeObserver !== 'undefined'
-        ? new ResizeObserver(() => map.invalidateSize())
+        ? new ResizeObserver(() => {
+            if (mapRef.current) {
+              mapRef.current.invalidateSize();
+            }
+          })
         : null;
     observer?.observe(containerRef.current);
 
     return () => {
       observer?.disconnect();
-      map.remove();
+      if (mapRef.current) {
+        mapRef.current.remove();
+      }
       mapRef.current = null;
       markersRef.current = {};
       popupsRef.current = {};
@@ -129,11 +147,13 @@ export default function SpotMap({
     if (!map) return;
 
     // Rebuild icons for state changes without recreating markers.
-    spots.forEach((spot) => {
-      const existing = markersRef.current[spot.id];
-      if (existing) {
-        existing.setIcon(buildIcon(spot));
-      }
+    map.whenReady(() => {
+      spots.forEach((spot) => {
+        const existing = markersRef.current[spot.id];
+        if (existing) {
+          existing.setIcon(buildIcon(spot));
+        }
+      });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId, hoveredId]);
@@ -152,25 +172,27 @@ export default function SpotMap({
     });
 
     // Add or refresh markers for current spots.
-    spots.forEach((spot) => {
-      let marker = markersRef.current[spot.id];
-      if (!marker) {
-        marker = L.marker([spot.lat, spot.lng], { icon: buildIcon(spot) }).addTo(map);
-        marker.on('click', () => onSelectRef.current?.(spot.id));
-        marker.on('mouseover', () => onHoverRef.current?.(spot.id));
-        marker.on('mouseout', () => onHoverRef.current?.(null));
-        markersRef.current[spot.id] = marker;
+    map.whenReady(() => {
+      spots.forEach((spot) => {
+        let marker = markersRef.current[spot.id];
+        if (!marker) {
+          marker = L.marker([spot.lat, spot.lng], { icon: buildIcon(spot) }).addTo(map);
+          marker.on('click', () => onSelectRef.current?.(spot.id));
+          marker.on('mouseover', () => onHoverRef.current?.(spot.id));
+          marker.on('mouseout', () => onHoverRef.current?.(null));
+          markersRef.current[spot.id] = marker;
 
-        const popup = L.popup({
-          className: 'sesh-popup',
-          closeButton: false,
-          offset: [0, -14],
-        }).setContent(popupHtml(spot));
-        marker.bindPopup(popup);
-        popupsRef.current[spot.id] = popup;
-      } else {
-        marker.setIcon(buildIcon(spot));
-      }
+          const popup = L.popup({
+            className: 'sesh-popup',
+            closeButton: false,
+            offset: [0, -14],
+          }).setContent(popupHtml(spot));
+          marker.bindPopup(popup);
+          popupsRef.current[spot.id] = popup;
+        } else {
+          marker.setIcon(buildIcon(spot));
+        }
+      });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spots]);
