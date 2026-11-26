@@ -47,9 +47,9 @@ export default function LandingPage() {
       <MarketingNav />
 
       <main className="flex flex-1 flex-col">
-        {/* Hero - map leads on mobile, side-by-side on desktop */}
-        <section className="mx-auto w-full max-w-6xl px-6 py-16 md:py-24">
-          <div className="mx-auto max-w-3xl text-center md:text-left md:max-w-none">
+        {/* Hero - text left, map right on desktop; stacked on mobile */}
+        <section className="mx-auto flex w-full max-w-6xl flex-col items-center gap-12 px-6 py-16 md:flex-row md:items-center md:py-24">
+          <div className="flex-1 max-w-xl text-center md:text-left">
             <p className="text-sm font-medium text-muted tracking-wide">
               Live in Lagos
             </p>
@@ -62,7 +62,7 @@ export default function LandingPage() {
             </p>
 
             {/* Trust signals - minimal, inline */}
-            <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-muted" role="list" aria-label="Trust signals">
+            <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-muted justify-center md:justify-start" role="list" aria-label="Trust signals">
               {TRUST_SIGNALS.map((signal, i) => (
                 <span key={i} className="flex items-center gap-1.5" role="listitem">
                   <span className="font-semibold">{signal.value}</span>
@@ -72,7 +72,7 @@ export default function LandingPage() {
             </div>
 
             {/* Primary CTA */}
-            <div className="mt-10 flex flex-col sm:flex-row items-center gap-4">
+            <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start">
               <Link href="/explore">
                 <Button size="lg" className="rounded-full px-8 text-base min-h-[48px] w-full sm:w-auto" aria-label="Open the live map to see active spots">
                   Open the map
@@ -91,7 +91,7 @@ export default function LandingPage() {
           </div>
 
           {/* App preview card - the hero image, shown on all screens */}
-          <div className="mt-12 md:mt-0 relative w-full max-w-md mx-auto md:ml-auto md:max-w-lg">
+          <div className="w-full max-w-md mx-auto md:max-w-lg flex-shrink-0">
             <div className="relative overflow-hidden rounded-[16px] border bg-surface p-4 shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-sm font-semibold font-display">
