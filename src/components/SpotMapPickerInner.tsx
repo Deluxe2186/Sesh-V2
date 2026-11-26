@@ -182,6 +182,11 @@ export default function SpotMapPickerInner({
         observer?.observe(containerRef.current);
       });
 
+      } catch (err) {
+        onError('Failed to load map. Please try again.');
+        console.error('Map initialization error:', err);
+      }
+
     return () => {
       if (observer) {
         observer.disconnect();
