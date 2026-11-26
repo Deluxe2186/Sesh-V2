@@ -211,13 +211,13 @@ export default function ProfilePage() {
   const initials = user ? getInitials(user.name) : '?';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-stagger-fade-in">
       {/* Header Card */}
-      <Card className="rounded-[12px]">
+      <Card className="rounded-[12px] card-hover hover-lift-sm stagger-1 animate-fade-in-up">
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-20 w-20">
+            <div className="flex items-center gap-4 stagger-1 animate-fade-in-right">
+              <Avatar className="h-20 w-20 transition-transform duration-fast hover:scale-105 press-scale">
                 <AvatarFallback className="text-2xl font-bold bg-accent text-accent-foreground">
                   {initials}
                 </AvatarFallback>
@@ -231,35 +231,35 @@ export default function ProfilePage() {
                       onChange={(e) =>
                         setEditableUser({ ...editableUser, name: e.target.value })
                       }
-                      className="text-2xl font-bold font-display bg-transparent border-none outline-none focus:ring-2 focus:ring-accent rounded px-1"
+                      className="text-2xl font-bold font-display bg-transparent border-none outline-none focus:ring-2 focus:ring-accent rounded px-1 transition-all duration-fast"
                     />
                     <p className="text-sm text-muted">@{user?.handle}</p>
                   </>
                 ) : (
                   <>
-                    <h2 className="text-2xl font-bold font-display">{user?.name}</h2>
-                    <p className="text-sm text-muted">@{user?.handle}</p>
+                    <h2 className="text-2xl font-bold font-display stagger-2 animate-fade-in-up">{user?.name}</h2>
+                    <p className="text-sm text-muted stagger-3 animate-fade-in-up">@{user?.handle}</p>
                   </>
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="gap-1">
+            <div className="flex items-center gap-2 stagger-4 animate-fade-in-left">
+              <Badge variant="secondary" className="gap-1 press-scale transition-all duration-fast hover:border-accent/30">
                 <MapPin className="h-3 w-3" />
                 Lagos
               </Badge>
               {isEditing ? (
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={handleCancelEdit}>
+                  <Button variant="outline" size="sm" onClick={handleCancelEdit} className="press-scale">
                     Cancel
                   </Button>
-                  <Button size="sm" onClick={handleSaveProfile}>
+                  <Button size="sm" onClick={handleSaveProfile} className="press-scale hover-lift">
                     Save
                   </Button>
                 </div>
               ) : (
-                <Button variant="outline" size="sm" onClick={handleEdit}>
-                  <Edit className="mr-2 h-4 w-4" />
+                <Button variant="outline" size="sm" onClick={handleEdit} className="press-scale hover-lift">
+                  <Edit className="mr-2 h-4 w-4 transition-transform duration-fast hover:rotate-90" />
                   Edit profile
                 </Button>
               )}
@@ -269,17 +269,17 @@ export default function ProfilePage() {
       </Card>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-stagger-fade-in">
         {stats.map((stat, i) => (
-          <Card key={i} className="rounded-[12px]">
+          <Card key={i} className="rounded-[12px] card-hover hover-lift-sm press-scale stagger-1 animate-fade-in-up" style={{ animationDelay: `${i * 80}ms` }}>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent transition-all duration-fast group-hover:scale-110 group-hover:bg-accent/20">
                   <stat.icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold font-display">{stat.value}</p>
-                  <p className="text-sm text-muted">{stat.label}</p>
+                  <p className="text-2xl font-bold font-display stagger-1 animate-fade-in-up">{stat.value}</p>
+                  <p className="text-sm text-muted stagger-2 animate-fade-in-up">{stat.label}</p>
                 </div>
               </div>
             </CardContent>
@@ -288,18 +288,18 @@ export default function ProfilePage() {
       </div>
 
       {/* Skater Details Card */}
-      <Card className="rounded-[12px]">
+      <Card className="rounded-[12px] card-hover hover-lift-sm stagger-2 animate-fade-in-up">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Star className="h-5 w-5 text-accent" />
+          <CardTitle className="flex items-center gap-2 stagger-1 animate-fade-in-up">
+            <Star className="h-5 w-5 text-accent transition-transform duration-fast hover:scale-110" />
             Skater details
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           {isEditing ? (
-            <div className="space-y-6">
+            <div className="space-y-6 animate-stagger-fade-in">
               {/* Stance */}
-              <div>
+              <div className="stagger-1 animate-fade-in-up">
                 <label className="text-sm font-medium mb-2 block">Stance</label>
                 <ToggleGroup
                   type="single"
@@ -311,7 +311,7 @@ export default function ProfilePage() {
                     <ToggleGroupItem
                       key={s.value}
                       value={s.value}
-                      className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+                      className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground press-scale transition-all duration-fast"
                     >
                       {s.label}
                     </ToggleGroupItem>
@@ -320,7 +320,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Level */}
-              <div>
+              <div className="stagger-2 animate-fade-in-up">
                 <label className="text-sm font-medium mb-2 block">Level</label>
                 <ToggleGroup
                   type="single"
@@ -332,7 +332,7 @@ export default function ProfilePage() {
                     <ToggleGroupItem
                       key={l.value}
                       value={l.value}
-                      className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+                      className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground press-scale transition-all duration-fast"
                     >
                       {l.label}
                     </ToggleGroupItem>
@@ -341,17 +341,18 @@ export default function ProfilePage() {
               </div>
 
               {/* Preferred Obstacles */}
-              <div>
+              <div className="stagger-3 animate-fade-in-up">
                 <label className="text-sm font-medium mb-2 block">Preferred obstacles</label>
-                <div className="flex flex-wrap gap-2">
-                  {OBSTACLES.map((obstacle) => {
+                <div className="flex flex-wrap gap-2 animate-stagger-fade-in">
+                  {OBSTACLES.map((obstacle, index) => {
                     const isSelected = editableUser.preferredObstacles?.includes(obstacle);
                     return (
                       <Toggle
                         key={obstacle}
                         pressed={isSelected}
                         onPressedChange={() => handleObstacleToggle(obstacle)}
-                        className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+                        className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground press-scale transition-all duration-fast stagger-1 animate-fade-in-up"
+                        style={{ animationDelay: `${index * 40}ms` }}
                       >
                         {obstacle}
                       </Toggle>
@@ -361,20 +362,20 @@ export default function ProfilePage() {
               </div>
             </div>
           ) : (
-            <dl className="grid gap-4 md:grid-cols-3">
-              <div>
+            <dl className="grid gap-4 md:grid-cols-3 animate-stagger-fade-in">
+              <div className="stagger-1 animate-fade-in-up">
                 <dt className="text-sm text-muted">Stance</dt>
                 <dd className="mt-1 font-medium">{fullUser?.stance}</dd>
               </div>
-              <div>
+              <div className="stagger-2 animate-fade-in-up">
                 <dt className="text-sm text-muted">Level</dt>
                 <dd className="mt-1 font-medium">{fullUser?.level}</dd>
               </div>
-              <div>
+              <div className="stagger-3 animate-fade-in-up">
                 <dt className="text-sm text-muted">Preferred obstacles</dt>
-                <dd className="mt-1 flex flex-wrap gap-1.5">
-                  {fullUser?.preferredObstacles?.map((o) => (
-                    <Badge key={o} variant="outline" className="gap-1">
+                <dd className="mt-1 flex flex-wrap gap-1.5 animate-stagger-fade-in">
+                  {fullUser?.preferredObstacles?.map((o, index) => (
+                    <Badge key={o} variant="outline" className="gap-1 press-scale transition-all duration-fast stagger-1 animate-fade-in-up" style={{ animationDelay: `${index * 50}ms` }}>
                       {o}
                     </Badge>
                   ))}
@@ -386,33 +387,34 @@ export default function ProfilePage() {
       </Card>
 
       {/* Spots You Might Like */}
-      <Card className="rounded-[12px]">
+      <Card className="rounded-[12px] card-hover hover-lift-sm stagger-3 animate-fade-in-up">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-accent" />
+          <CardTitle className="flex items-center gap-2 stagger-1 animate-fade-in-up">
+            <Target className="h-5 w-5 text-accent transition-transform duration-fast hover:scale-110" />
             Spots you might like
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 animate-stagger-fade-in">
             {recommendedSpots.length > 0 ? (
-              recommendedSpots.map((spot) => (
+              recommendedSpots.map((spot, index) => (
                 <Link
                   key={spot.id}
                   href={`/spot/${spot.id}`}
-                  className="block rounded-[12px] border bg-surface p-3 transition-colors hover:border-accent"
+                  className="block rounded-[12px] border bg-surface p-3 transition-all duration-fast card-hover hover-lift-sm press-scale stagger-1 animate-fade-in-up"
+                  style={{ animationDelay: `${index * 80}ms` }}
                 >
                   <div className="flex gap-3">
-                    <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[8px] bg-secondary" />
+                    <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[8px] bg-secondary transition-transform duration-fast group-hover:scale-105" />
                     <div className="min-w-0 flex-1">
-                      <h3 className="truncate font-semibold font-display">{spot.name}</h3>
+                      <h3 className="truncate font-semibold font-display transition-colors duration-fast group-hover:text-accent">{spot.name}</h3>
                       <p className="mt-0.5 flex items-center gap-1 text-sm text-muted">
                         <MapPin className="h-3 w-3" />
                         {spot.area}
                       </p>
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {spot.obstacles.slice(0, 3).map((o) => (
-                          <Badge key={o} variant="outline" className="text-[11px]">
+                      <div className="mt-2 flex flex-wrap gap-1 animate-stagger-fade-in">
+                        {spot.obstacles.slice(0, 3).map((o, i) => (
+                          <Badge key={o} variant="outline" className="text-[11px] stagger-1 animate-fade-in-up" style={{ animationDelay: `${i * 40}ms` }}>
                             {o}
                           </Badge>
                         ))}
@@ -425,7 +427,7 @@ export default function ProfilePage() {
                 </Link>
               ))
             ) : (
-              <div className="col-span-full text-center py-8 text-muted">
+              <div className="col-span-full text-center py-8 text-muted stagger-1 animate-fade-in-up">
                 No matching spots found. Add more preferred obstacles to get recommendations.
               </div>
             )}
@@ -434,19 +436,20 @@ export default function ProfilePage() {
       </Card>
 
       {/* Recent Sessions */}
-      <Card className="rounded-[12px]">
+      <Card className="rounded-[12px] card-hover hover-lift-sm stagger-4 animate-fade-in-up">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-accent" />
+          <CardTitle className="flex items-center gap-2 stagger-1 animate-fade-in-up">
+            <Clock className="h-5 w-5 text-accent transition-transform duration-fast hover:scale-110" />
             Recent sessions
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="space-y-3">
+          <div className="space-y-3 animate-stagger-fade-in">
             {recentSessions.map((session, i) => (
               <div
                 key={i}
-                className="flex items-center justify-between rounded-full border px-4 py-2.5 text-sm hover:border-accent transition-colors"
+                className="flex items-center justify-between rounded-full border px-4 py-2.5 text-sm hover:border-accent hover:bg-accent/5 transition-all duration-fast stagger-1 animate-fade-in-up press-scale"
+                style={{ animationDelay: `${i * 60}ms` }}
               >
                 <div className="flex items-center gap-3">
                   <span className="w-5 font-bold text-accent">{i + 1}</span>
@@ -466,16 +469,16 @@ export default function ProfilePage() {
       </Card>
 
       {/* Coming Soon */}
-      <Card className="rounded-[12px] border-border/50">
+      <Card className="rounded-[12px] border-border/50 card-hover hover-lift-sm stagger-5 animate-fade-in-up">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Check className="h-5 w-5 text-accent" />
+          <CardTitle className="flex items-center gap-2 stagger-1 animate-fade-in-up">
+            <Check className="h-5 w-5 text-accent transition-transform duration-fast hover:scale-110" />
             Coming soon
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-0 space-y-4">
+        <CardContent className="pt-0 space-y-4 animate-stagger-fade-in">
           {/* Weekly challenges */}
-          <div className="flex items-center justify-between p-4 rounded-lg border bg-secondary">
+          <div className="flex items-center justify-between p-4 rounded-lg border bg-secondary stagger-1 animate-fade-in-up transition-all duration-fast hover:border-accent/30">
             <div>
               <p className="font-medium">Weekly challenges</p>
               <p className="text-sm text-muted">
@@ -485,14 +488,14 @@ export default function ProfilePage() {
             <Toggle
               pressed={notifyWeekly}
               onPressedChange={(value) => handleNotifyToggle('notifyWeekly', value)}
-              className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+              className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground press-scale transition-all duration-fast"
             >
               Notify me
             </Toggle>
           </div>
 
           {/* Avatar and board customization */}
-          <div className="flex items-center justify-between p-4 rounded-lg border bg-secondary">
+          <div className="flex items-center justify-between p-4 rounded-lg border bg-secondary stagger-2 animate-fade-in-up transition-all duration-fast hover:border-accent/30">
             <div>
               <p className="font-medium">Avatar and board customization</p>
               <p className="text-sm text-muted">
@@ -502,7 +505,7 @@ export default function ProfilePage() {
             <Toggle
               pressed={notifyCosmetics}
               onPressedChange={(value) => handleNotifyToggle('notifyCosmetics', value)}
-              className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+              className="data-[state=on]:bg-accent data-[state=on]:text-accent-foreground press-scale transition-all duration-fast"
             >
               Notify me
             </Toggle>

@@ -48,19 +48,19 @@ export default function ConditionsCard({ spot }: { spot: Spot }) {
       : null;
 
   return (
-    <div className="rounded-[12px] border bg-surface p-5">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+    <div className="rounded-[12px] border bg-surface p-5 card-hover hover-lift-sm animate-fade-in-up stagger-1">
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted animate-fade-in-up stagger-1">
         Conditions now
       </h2>
 
       {state.status === 'idle' && settings.lowDataMode && (
-        <div className="flex flex-col items-start gap-3">
-          <p className="text-sm text-muted">
+        <div className="flex flex-col items-start gap-3 animate-stagger-fade-in">
+          <p className="text-sm text-muted stagger-1 animate-fade-in-up">
             Weather is not loaded in low data mode.
           </p>
           <Button
             variant="outline"
-            className="rounded-full"
+            className="rounded-full press-scale stagger-2 animate-fade-in-up"
             onClick={load}
           >
             Load weather
@@ -69,32 +69,32 @@ export default function ConditionsCard({ spot }: { spot: Spot }) {
       )}
 
       {state.status === 'loading' && (
-        <div className="flex flex-col gap-2">
-          <div className="h-5 w-32 animate-pulse rounded bg-border" />
-          <div className="h-4 w-48 animate-pulse rounded bg-border" />
-          <div className="h-4 w-40 animate-pulse rounded bg-border" />
+        <div className="flex flex-col gap-2 animate-stagger-fade-in">
+          <div className="h-5 w-32 shimmer rounded stagger-1" />
+          <div className="h-4 w-48 shimmer rounded stagger-2" />
+          <div className="h-4 w-40 shimmer rounded stagger-3" />
         </div>
       )}
 
       {state.status === 'error' && (
-        <p className="text-sm text-muted">Weather unavailable right now</p>
+        <p className="text-sm text-muted animate-fade-in-up">Weather unavailable right now</p>
       )}
 
       {state.status === 'ok' && surface && (
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-sm">
-            <Thermometer className="h-4 w-4 text-muted" />
+        <div className="flex flex-col gap-2 animate-stagger-fade-in">
+          <div className="flex items-center gap-2 text-sm stagger-1 animate-fade-in-up transition-colors duration-fast group-hover:gap-3">
+            <Thermometer className="h-4 w-4 text-muted transition-transform duration-fast group-hover:scale-110" />
             <span className="font-medium">{state.data.temperature}°C</span>
             <span className="text-muted">{state.data.description}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <CloudRain className="h-4 w-4 text-muted" />
+          <div className="flex items-center gap-2 text-sm stagger-2 animate-fade-in-up transition-colors duration-fast group-hover:gap-3">
+            <CloudRain className="h-4 w-4 text-muted transition-transform duration-fast group-hover:scale-110" />
             <span className="text-muted">
               {state.data.rainChanceNext3h}% rain in next 3h
             </span>
           </div>
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <CloudSun className="h-4 w-4 text-accent" />
+          <div className="flex items-center gap-2 text-sm font-medium stagger-3 animate-fade-in-up transition-colors duration-fast group-hover:gap-3">
+            <CloudSun className="h-4 w-4 text-accent transition-transform duration-fast group-hover:scale-110" />
             <span>{surface}</span>
           </div>
         </div>

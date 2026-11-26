@@ -49,20 +49,20 @@ export default function LandingPage() {
       <main className="flex flex-1 flex-col">
         {/* Hero - text left, map right on desktop; stacked on mobile */}
         <section className="mx-auto flex w-full max-w-6xl flex-col items-center gap-12 px-6 py-16 md:flex-row md:items-center md:py-24">
-          <div className="flex-1 max-w-xl text-center md:text-left">
-            <p className="text-sm font-medium text-muted tracking-wide">
+          <div className="flex-1 max-w-xl text-center md:text-left animate-stagger-fade-in">
+            <p className="text-sm font-medium text-muted tracking-wide stagger-1 animate-fade-in-up">
               Live in Lagos
             </p>
-            <h1 className="mt-4 text-4xl font-bold leading-[110%] font-display md:text-5xl lg:text-6xl">
+            <h1 className="mt-4 text-4xl font-bold leading-[110%] font-display md:text-5xl lg:text-6xl stagger-2 animate-fade-in-up">
               Know where the session is before you leave home.
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-[160%] text-muted mx-auto md:mx-0">
+            <p className="mt-6 max-w-xl text-lg leading-[160%] text-muted mx-auto md:mx-0 stagger-3 animate-fade-in-up">
               Real-time skater counts on every verified spot across Lagos.
               No more showing up to empty plazas. No more missed sessions.
             </p>
 
             {/* Trust signals - minimal, inline */}
-            <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-muted justify-center md:justify-start" role="list" aria-label="Trust signals">
+            <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-muted justify-center md:justify-start stagger-4 animate-fade-in-up" role="list" aria-label="Trust signals">
               {TRUST_SIGNALS.map((signal, i) => (
                 <span key={i} className="flex items-center gap-1.5" role="listitem">
                   <span className="font-semibold">{signal.value}</span>
@@ -72,9 +72,9 @@ export default function LandingPage() {
             </div>
 
             {/* Primary CTA */}
-            <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start">
+            <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start stagger-5 animate-fade-in-up">
               <Link href="/explore">
-                <Button size="lg" className="rounded-full px-8 text-base min-h-[48px] w-full sm:w-auto" aria-label="Open the live map to see active spots">
+                <Button size="lg" className="rounded-full px-8 text-base min-h-[48px] w-full sm:w-auto press-scale" aria-label="Open the live map to see active spots">
                   Open the map
                 </Button>
               </Link>
@@ -82,7 +82,7 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="rounded-full px-8 text-base min-h-[48px] w-full sm:w-auto"
+                  className="rounded-full px-8 text-base min-h-[48px] w-full sm:w-auto press-scale"
                 >
                   How it works
                 </Button>
@@ -91,8 +91,8 @@ export default function LandingPage() {
           </div>
 
           {/* App preview card - the hero image, shown on all screens */}
-          <div className="w-full max-w-md mx-auto md:max-w-lg flex-shrink-0">
-            <div className="relative overflow-hidden rounded-[16px] border bg-surface p-4 shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
+          <div className="w-full max-w-md mx-auto md:max-w-lg flex-shrink-0 animate-fade-in-up stagger-3" style={{ animationDelay: '300ms' }}>
+            <div className="relative overflow-hidden rounded-[16px] border bg-surface p-4 shadow-[0_4px_24px_rgba(0,0,0,0.08)] card-hover hover-lift">
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-sm font-semibold font-display">
                   Lagos · Live map
@@ -126,11 +126,14 @@ export default function LandingPage() {
                   <span
                     key={i}
                     className="absolute h-3.5 w-3.5 rounded-full border-2 border-white bg-accent animate-pulse"
-                    style={pos}
+                    style={{
+                      ...pos,
+                      animationDelay: `${i * 200}ms`,
+                    }}
                   />
                 ))}
                 {/* Floating live card */}
-                <div className="absolute bottom-4 left-4 right-4 rounded-[12px] border bg-surface p-3 shadow-sm animate-fade-in">
+                <div className="absolute bottom-4 left-4 right-4 rounded-[12px] border bg-surface p-3 shadow-sm animate-fade-in-up stagger-1" style={{ animationDelay: '600ms' }}>
                   <div className="flex items-center gap-3">
                     <span className="relative flex h-2.5 w-2.5">
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--live)] opacity-75" />
@@ -154,20 +157,20 @@ export default function LandingPage() {
         </section>
 
         {/* Thin strip */}
-        <div className="border-y bg-surface">
+        <div className="border-y bg-surface animate-fade-in-up" style={{ animationDelay: '500ms' }}>
           <div className="mx-auto flex w-full max-w-6xl items-center justify-center gap-2 px-6 py-3 text-sm font-medium text-muted">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />
+            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" aria-hidden="true" />
             Built for Lagos. Works with low data.
           </div>
         </div>
 
         {/* How it works - editorial layout, not card grid */}
-        <section id="how-it-works" className="mx-auto w-full max-w-6xl px-6 py-20 md:py-28" aria-labelledby="how-it-works-heading">
+        <section id="how-it-works" className="mx-auto w-full max-w-6xl px-6 py-20 md:py-28 animate-stagger-fade-in" aria-labelledby="how-it-works-heading">
           <header className="mb-16 max-w-2xl">
-            <h2 id="how-it-works-heading" className="text-3xl font-bold font-display md:text-4xl">
+            <h2 id="how-it-works-heading" className="text-3xl font-bold font-display md:text-4xl stagger-1 animate-fade-in-up">
               How it works
             </h2>
-            <p className="mt-3 text-muted leading-[160%]">
+            <p className="mt-3 text-muted leading-[160%] stagger-2 animate-fade-in-up">
               Four steps from your door to the session.
             </p>
           </header>
@@ -176,16 +179,17 @@ export default function LandingPage() {
             {STEPS.map((step, index) => (
               <article
                 key={step.title}
-                className="flex flex-col md:flex-row md:items-start gap-6 md:gap-8 p-0"
+                className="flex flex-col md:flex-row md:items-start gap-6 md:gap-8 p-0 card-interactive hover-lift-sm group"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
                 {/* Number - subtle, not a badge */}
-                <span className="flex-shrink-0 w-8 text-right text-2xl font-bold font-display text-foreground/30 md:w-10" aria-hidden="true">
+                <span className="flex-shrink-0 w-8 text-right text-2xl font-bold font-display text-foreground/30 md:w-10 group-hover:text-accent transition-colors duration-normal" aria-hidden="true">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-foreground/5 text-foreground" aria-hidden="true">
-                      <step.icon className="h-5 w-5" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-foreground/5 text-foreground transition-all duration-normal group-hover:bg-accent/10 group-hover:text-accent" aria-hidden="true">
+                      <step.icon className="h-5 w-5 transition-transform duration-normal group-hover:scale-110" />
                     </div>
                     <h3 className="text-lg font-semibold font-display">
                       {step.title}
@@ -201,23 +205,23 @@ export default function LandingPage() {
         </section>
 
         {/* For skaters / For brands - distinct, not identical cards */}
-        <section className="mx-auto w-full max-w-6xl px-6 pb-20 md:pb-28" aria-labelledby="audiences-heading">
+        <section className="mx-auto w-full max-w-6xl px-6 pb-20 md:pb-28 animate-stagger-fade-in" aria-labelledby="audiences-heading">
           <h2 id="audiences-heading" className="sr-only">Who Sesh is for</h2>
           <div className="grid gap-6 md:grid-cols-2">
-            <article id="for-skaters" className="rounded-[16px] border bg-surface p-6 md:p-8">
-              <h2 className="text-2xl font-bold font-display">For skaters</h2>
-              <p className="mt-3 text-muted leading-[160%]">
+            <article id="for-skaters" className="rounded-[16px] border bg-surface p-6 md:p-8 card-hover hover-lift">
+              <h2 className="text-2xl font-bold font-display stagger-1 animate-fade-in-up">For skaters</h2>
+              <p className="mt-3 text-muted leading-[160%] stagger-2 animate-fade-in-up">
                 Stop guessing if the spot is lit. See live counts, read notes
                 from skaters who ride there, and share your location only when
                 you want to. Ghost mode hides you anytime, no questions asked.
               </p>
-              <ul className="mt-6 flex flex-col gap-3 text-sm" role="list">
+              <ul className="mt-6 flex flex-col gap-3 text-sm animate-stagger-fade-in" role="list">
                 {[
                   'Live counts on every spot',
                   'Obstacles, surface and best-time notes',
                   'Ghost mode keeps your session private',
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-3" role="listitem">
+                ].map((item, i) => (
+                  <li key={item} className="flex items-center gap-3 stagger-1 animate-fade-in-up" style={{ animationDelay: `${i * 80}ms` }} role="listitem">
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground/5 text-foreground" aria-hidden="true">
                       <Check className="h-3 w-3" />
                     </span>
@@ -226,24 +230,24 @@ export default function LandingPage() {
                 ))}
               </ul>
               <Link href="/signup">
-                <Button className="mt-8 rounded-full w-full min-h-[48px]">Create your account</Button>
+                <Button className="mt-8 rounded-full w-full min-h-[48px] press-scale stagger-4 animate-fade-in-up">Create your account</Button>
               </Link>
             </article>
 
-            <article id="for-brands" className="rounded-[16px] bg-accent/5 p-6 md:p-8 border border-accent/20">
-              <h2 className="text-2xl font-bold font-display">For brands</h2>
-              <p className="mt-3 text-muted leading-[160%]">
+            <article id="for-brands" className="rounded-[16px] bg-accent/5 p-6 md:p-8 border border-accent/20 card-hover hover-lift">
+              <h2 className="text-2xl font-bold font-display stagger-1 animate-fade-in-up">For brands</h2>
+              <p className="mt-3 text-muted leading-[160%] stagger-2 animate-fade-in-up">
                 Sponsor weekly challenges and reach Nigerian skaters directly.
                 Put your gear in front of the community that is actually
                 skating, not just scrolling.
               </p>
-              <ul className="mt-6 flex flex-col gap-3 text-sm" role="list">
+              <ul className="mt-6 flex flex-col gap-3 text-sm animate-stagger-fade-in" role="list">
                 {[
                   'Sponsor weekly spot challenges',
                   'Reach Lagos skaters where they skate',
                   'Support the scene, grow your name',
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-3" role="listitem">
+                ].map((item, i) => (
+                  <li key={item} className="flex items-center gap-3 stagger-1 animate-fade-in-up" style={{ animationDelay: `${i * 80}ms` }} role="listitem">
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground/5 text-foreground" aria-hidden="true">
                       <Check className="h-3 w-3" />
                     </span>
@@ -252,7 +256,7 @@ export default function LandingPage() {
                 ))}
               </ul>
               <a href="mailto:hello@sesh.ng">
-                <Button variant="outline" className="mt-8 rounded-full w-full min-h-[48px] border-foreground/20 text-foreground hover:bg-foreground/5">
+                <Button variant="outline" className="mt-8 rounded-full w-full min-h-[48px] border-foreground/20 text-foreground hover:bg-foreground/5 press-scale stagger-4 animate-fade-in-up">
                   Talk to us
                 </Button>
               </a>
@@ -261,19 +265,19 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t bg-surface" role="contentinfo">
+      <footer className="border-t bg-surface animate-fade-in-up" role="contentinfo">
         <div className="mx-auto flex h-20 w-full max-w-6xl flex-col items-center justify-center gap-2 px-6 text-sm text-muted md:flex-row md:justify-between">
           <span className="font-bold text-foreground font-display">
             Sesh. Built in Lagos.
           </span>
           <nav className="flex items-center gap-5" aria-label="Footer navigation">
-            <Link href="/login" className="hover:text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded">
+            <Link href="/login" className="hover:text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded transition-colors duration-fast">
               Log in
             </Link>
-            <Link href="/signup" className="hover:text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded">
+            <Link href="/signup" className="hover:text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded transition-colors duration-fast">
               Sign up
             </Link>
-            <a href="#how-it-works" className="hover:text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded">
+            <a href="#how-it-works" className="hover:text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded transition-colors duration-fast">
               How it works
             </a>
           </nav>

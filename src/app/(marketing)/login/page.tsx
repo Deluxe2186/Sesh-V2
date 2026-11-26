@@ -55,17 +55,17 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-[100dvh] flex-col">
       <MarketingNav />
-      <main className="flex flex-1 items-center justify-center px-6 py-16">
-        <div className="w-full max-w-sm">
-          <div className="rounded-[12px] border bg-surface p-8">
-            <h1 className="text-2xl font-bold font-display">Welcome back</h1>
-            <p className="mt-1 text-sm text-muted">
+      <main className="flex flex-1 items-center justify-center px-6 py-16 animate-fade-in-up">
+        <div className="w-full max-w-sm animate-stagger-fade-in">
+          <div className="rounded-[12px] border bg-surface p-8 card-hover hover-lift-sm stagger-1 animate-fade-in-up">
+            <h1 className="text-2xl font-bold font-display stagger-2 animate-fade-in-up">Welcome back</h1>
+            <p className="mt-1 text-sm text-muted stagger-3 animate-fade-in-up">
               Log in to see live sessions across Lagos.
             </p>
 
-            <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4" noValidate>
+            <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4 animate-stagger-fade-in" noValidate>
               {errors.form && (
-                <div className="rounded-[12px] border border-[var(--warning)]/40 bg-[var(--warning)]/10 px-4 py-3 text-sm text-foreground">
+                <div className="rounded-[12px] border border-[var(--warning)]/40 bg-[var(--warning)]/10 px-4 py-3 text-sm text-foreground animate-fade-in-down stagger-1">
                   {errors.form}
                 </div>
               )}
@@ -93,21 +93,21 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="mt-2 w-full rounded-full"
+                className="mt-2 w-full rounded-full press-scale hover-lift stagger-4 animate-fade-in-up"
                 disabled={submitting}
               >
                 {submitting ? 'Logging in…' : 'Log in'}
               </Button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-muted">
+            <p className="mt-6 text-center text-sm text-muted stagger-5 animate-fade-in-up">
               New to Sesh?{' '}
-              <Link href="/signup" className="font-medium text-accent">
+              <Link href="/signup" className="font-medium text-accent hover:underline transition-colors duration-fast">
                 Create an account
               </Link>
             </p>
           </div>
-          <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted">
+          <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted stagger-6 animate-fade-in-up">
             <MapPin className="h-3 w-3" />
             Lagos, Nigeria
           </p>
@@ -137,7 +137,7 @@ function Field({
   autoComplete?: string;
 }) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5 stagger-1 animate-fade-in-up transition-all duration-fast">
       <label htmlFor={id} className="text-sm font-medium">
         {label}
       </label>
@@ -148,11 +148,11 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         autoComplete={autoComplete}
-        className={`h-10 rounded-[12px] border bg-background px-3 text-sm outline-none focus:border-accent ${
-          error ? 'border-[var(--warning)]' : ''
+        className={`h-10 rounded-[12px] border bg-background px-3 text-sm outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all duration-fast ${
+          error ? 'border-[var(--warning)] focus:border-[var(--warning)] focus:ring-[var(--warning)]' : ''
         }`}
       />
-      {error && <span className="text-xs text-[var(--warning)]">{error}</span>}
+      {error && <span className="text-xs text-[var(--warning)] animate-fade-in-down">{error}</span>}
     </div>
   );
 }

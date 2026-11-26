@@ -140,201 +140,11 @@
 }
 
 [data-theme='dark'] {
-  --background: #0e0e10;
-  --surface: #17171a;
-  --surface-elevated: #1e1e22;
-  --foreground: #f4f4f5;
-  --muted: #a3a3ae;
-  --muted-foreground: #a3a3ae;
-  --border: #3a3a3f;
-  --accent: #ff5a1f;
-  --accent-soft: #3d1a0f;
-  --accent-foreground: #ffffff;
-  --primary: #f4f4f5;
-  --primary-foreground: #0e0e10;
-  --secondary: #2a2a2f;
-  --secondary-foreground: #f4f4f5;
-  --destructive: #ef4444;
-  --destructive-foreground: #0e0e10;
-  --ring: #ff5a1f;
-  --input: #3a3a3f;
-  --live: #22c55e;
-  --live-soft: #14532d;
-  --warning: #fbbf24;
-  --warning-soft: #422006;
-  --danger: #ef4444;
-  --danger-soft: #450a0a;
-  --card: #17171a;
-  --card-foreground: #f4f4f5;
-  --popover: #17171a.
-  --popover-foreground: #f4f4f5.
-
-  /* Gradients */
-  --gradient-accent: linear-gradient(135deg, #ff5a1f 0%, #ff8c42 100%);
-  --gradient-surface: linear-gradient(135deg, var(--surface) 0%, var(--surface-elevated) 100%);
-  --gradient-accent-soft: linear-gradient(135deg, var(--accent-soft) 0%, transparent 100%);
-}
-
-/* ========================================
-   SPACING TOKENS (4px base unit)
-   ======================================== */
-:root {
-  --space-0: 0;
-  --space-1: 0.25rem;   /* 4px */
-  --space-2: 0.5rem;    /* 8px */
-  --space-3: 0.75rem;   /* 12px */
-  --space-4: 1rem;      /* 16px */
-  --space-5: 1.25rem;   /* 20px */
-  --space-6: 1.5rem;    /* 24px */
-  --space-8: 2rem;      /* 32px */
-  --space-10: 2.5rem;   /* 40px */
-  --space-12: 3rem;     /* 48px */
-  --space-16: 4rem;     /* 64px */
-
-  /* Border Radius */
-  --radius-none: 0;
-  --radius-sm: 0.25rem;     /* 4px */
-  --radius-md: 0.5rem;      /* 8px */
-  --radius-lg: 0.75rem;     /* 12px */
-  --radius-xl: 1rem;        /* 16px */
-  --radius-2xl: 1.5rem;     /* 24px */
-  --radius-full: 9999px;
-
-  /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12);
-  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
-
-  /* Typography Scale */
-  --text-display-xl: 4.5rem;   /* 72px */
-  --text-display-lg: 3.5rem;   /* 56px */
-  --text-display-md: 2.25rem;  /* 36px */
-  --text-display-sm: 1.5rem;   /* 24px */
-  --text-xl: 1.25rem;          /* 20px */
-  --text-lg: 1.125rem;         /* 18px */
-  --text-base: 1rem;           /* 16px */
-  --text-sm: 0.875rem;         /* 14px */
-  --text-xs: 0.75rem;          /* 12px */
-
-  /* Animation Durations */
-  --duration-instant: 0ms;
-  --duration-fast: 150ms;
-  --duration-normal: 200ms;
-  --duration-normal-spring: 300ms;
-  --duration-normal-ease: 250ms;
-  --duration-slow: 350ms;
-  --duration-slow-spring: 500ms.
-
-  /* Easing Functions */
-  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1).
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1).
-  --ease-out: cubic-bezier(0, 0, 0.2, 1).
-  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1).
-}
-
-[data-theme='dark'] {
-  --background: #0e0e10.
-  --surface: #17171a.
-  --surface-elevated: #1e1e22.
-  --foreground: #f4f4f5.
-  --muted: #a3a3ae.
-  --muted-foreground: #a3a3ae.
-  --border: #3a3a3f.
-  --accent: #ff5a1f.
-  --accent-soft: #3d1a0f.
-  --accent-foreground: #ffffff.
-  --primary: #f4f4f5.
-  --primary-foreground: #0e0e10.
-  --secondary: #2a2a2f.
-  --secondary-foreground: #f4f4f5.
-  --destructive: #ef4444.
-  --destructive-foreground: #0e0e10.
-  --ring: #ff5a1f.
-  --input: #3a3a3f.
-  --live: #22c55e.
-  --live-soft: #14532d.
-  --warning: #fbbf24.
-  --warning-soft: #422006.
-  --danger: #ef4444.
-  --danger-soft: #450a0a.
-  --card: #17171a.
-  --card-foreground: #f4f4f5.
-  --popover: #17171a.
-  --popover-foreground: #f4f4f5.
-
-  /* Gradients */
-  --gradient-accent: linear-gradient(135deg, #ff5a1f 0%, #ff8c42 100%).
-  --gradient-surface: linear-gradient(135deg, var(--surface) 0%, var(--surface-elevated) 100%).
-  --gradient-accent-soft: linear-gradient(135deg, var(--accent-soft) 0%, transparent 100%).
-}
-
-/* ========================================
-   SPACING TOKENS (4px base unit)
-   ======================================== */
-:root {
-  --space-0: 0;
-  --space-1: 0.25rem;   /* 4px */
-  --space-2: 0.5rem;    /* 8px */
-  --space-3: 0.75rem;   /* 12px */
-  --space-4: 1rem;      /* 16px */
-  --space-5: 1.25rem;   /* 20px */
-  --space-6: 1.5rem;    /* 24px */
-  --space-8: 2rem;      /* 32px */
-  --space-10: 2.5rem;   /* 40px */
-  --space-12: 3rem;     /* 48px */
-  --space-16: 4rem;     /* 64px */
-
-  /* Border Radius */
-  --radius-none: 0.
-  --radius-sm: 0.25rem;     /* 4px */
-  --radius-md: 0.5rem;      /* 8px */
-  --radius-lg: 0.75rem;     /* 12px */
-  --radius-xl: 1rem;        /* 16px */
-  --radius-2xl: 1.5rem;     /* 24px */
-  --radius-full: 9999px.
-
-  /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05).
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08).
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1).
-  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12).
-  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15).
-
-  /* Typography Scale */
-  --text-display-xl: 4.5rem;   /* 72px */
-  --text-display-lg: 3.5rem;   /* 56px */
-  --text-display-md: 2.25rem;  /* 36px */
-  --text-display-sm: 1.5rem;   /* 24px */
-  --text-xl: 1.25rem;          /* 20px */
-  --text-lg: 1.125rem;         /* 18px */
-  --text-base: 1rem;           /* 16px */
-  --text-sm: 0.875rem;         /* 14px */
-  --text-xs: 0.75rem;          /* 12px */
-
-  /* Animation Durations */
-  --duration-instant: 0ms.
-  --duration-fast: 150ms.
-  --duration-normal: 200ms.
-  --duration-normal-spring: 300ms.
-  --duration-normal-ease: 250ms.
-  --duration-slow: 350ms.
-  --duration-slow-spring: 500ms.
-
-  /* Easing Functions */
-  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1).
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1).
-  --ease-out: cubic-bezier(0, 0, 0.2, 1).
-  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1).
-}
-
-[data-theme='dark'] {
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2).
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3).
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4).
-  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.5).
-  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.6).
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.6);
 }
 
 /* ========================================
@@ -353,9 +163,9 @@ html {
 body {
   background-color: var(--background);
   color: var(--foreground);
-  transition: background-color 200ms ease, color 200ms ease.
-  overflow-x: clip.
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11".
+  transition: background-color 200ms ease, color 200ms ease;
+  overflow-x: clip;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 a,
@@ -365,7 +175,211 @@ input,
   transition: background-color var(--duration-fast) var(--ease-out),
     color var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out),
-    transform var(--duration-fast) var(--ease-out).
+    transform var(--duration-fast) var(--ease-out);
+}
+
+/* Focus visible styles */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ========================================
+   ANIMATION KEYFRAMES
+   ======================================== */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scale-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+
+@keyframes dialog-overlay-show {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dialog-content-show {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes popover-show {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes tooltip-show {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes select-content-show {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes toast-show {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toast-hide {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(100%); }
+}
+
+@keyframes progress-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 /* ========================================
@@ -417,325 +431,149 @@ input,
   .stagger-3 { animation-delay: 150ms; }
   .stagger-4 { animation-delay: 200ms; }
   .stagger-5 { animation-delay: 250ms; }
+  .stagger-6 { animation-delay: 300ms; }
+  .stagger-7 { animation-delay: 350ms; }
+  .stagger-8 { animation-delay: 400ms; }
 
-  /* Transition Utilities */
-  .transition-fast { transition-duration: 150ms; transition-timing-function: ease-out; }
-  .transition-normal { transition-duration: 200ms; transition-timing-function: ease-out; }
-  .transition-normal-spring { transition-duration: 300ms; transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .transition-normal-ease { transition-duration: 250ms; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
-  .transition-slow { transition-duration: 350ms; transition-timing-function: ease-in-out; }
-  .transition-slow-spring { transition-duration: 500ms; transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  /* Entry Animations */
+  .animate-fade-in {
+    animation: fade-in var(--duration-normal) var(--ease-out) forwards;
+  }
+  .animate-fade-out {
+    animation: fade-out var(--duration-normal) var(--ease-in-out) forwards;
+  }
+  .animate-fade-in-up {
+    animation: fade-in-up var(--duration-slow) var(--ease-out) forwards;
+  }
+  .animate-fade-in-down {
+    animation: fade-in-down var(--duration-slow) var(--ease-out) forwards;
+  }
+  .animate-slide-in-right {
+    animation: slide-in-right var(--duration-slow) var(--ease-out) forwards;
+  }
+  .animate-slide-in-left {
+    animation: slide-in-left var(--duration-slow) var(--ease-out) forwards;
+  }
+  .animate-scale-in {
+    animation: scale-in var(--duration-normal-spring) var(--ease-spring) forwards;
+  }
+  .animate-scale-out {
+    animation: scale-out var(--duration-normal-spring) var(--ease-in-out) forwards;
+  }
+  .animate-slide-in-up {
+    animation: slide-in-up var(--duration-slow) var(--ease-out) forwards;
+  }
 
-  /* Animation Durations */
-  .duration-instant { animation-duration: 0ms; }
-  .duration-fast { animation-duration: 150ms; }
-  .duration-normal { animation-duration: 200ms; }
-  .duration-normal-spring { animation-duration: 300ms; }
-  .duration-normal-ease { animation-duration: 250ms; }
-  .duration-slow { animation-duration: 350ms; }
-  .duration-slow-spring { animation-duration: 500ms; }
+  /* Staggered Entry Animations */
+  .animate-stagger-fade-in > * {
+    animation: fade-in-up var(--duration-slow) var(--ease-out) forwards;
+    opacity: 0;
+  }
+  .animate-stagger-fade-in > *:nth-child(1) { animation-delay: 0ms; }
+  .animate-stagger-fade-in > *:nth-child(2) { animation-delay: 80ms; }
+  .animate-stagger-fade-in > *:nth-child(3) { animation-delay: 160ms; }
+  .animate-stagger-fade-in > *:nth-child(4) { animation-delay: 240ms; }
+  .animate-stagger-fade-in > *:nth-child(5) { animation-delay: 320ms; }
+  .animate-stagger-fade-in > *:nth-child(6) { animation-delay: 400ms; }
+  .animate-stagger-fade-in > *:nth-child(7) { animation-delay: 480ms; }
+  .animate-stagger-fade-in > *:nth-child(8) { animation-delay: 560ms; }
 
-  /* Easing Functions for Animations */
-  .ease-standard { animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
-  .ease-spring { animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .ease-out { animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
-  .ease-in-out { animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+  /* Micro-interaction Animations */
+  .hover-lift {
+    transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .hover-lift-sm {
+    transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+  }
+  .hover-lift-sm:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .press-scale {
+    transition: transform var(--duration-instant) var(--ease-out);
+  }
+  .press-scale:active {
+    transform: scale(0.97);
+  }
+  .press-scale-sm:active {
+    transform: scale(0.98);
+  }
 
-  /* Stagger Delays */
-  .stagger-1 { animation-delay: 50ms; }
-  .stagger-2 { animation-delay: 100ms; }
-  .stagger-3 { animation-delay: 150ms; }
-  .stagger-4 { animation-delay: 200ms; }
-  .stagger-5 { animation-delay: 250ms; }
+  /* Border Accent Animation */
+  .border-accent-hover {
+    transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+  }
+  .border-accent-hover:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
 
-  /* Transition Utilities */
-  .transition-fast { transition-duration: 150ms; transition-timing-function: ease-out; }
-  .transition-normal { transition-duration: 200ms; transition-timing-function: ease-out; }
-  .transition-normal-spring { transition-duration: 300ms; transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .transition-normal-ease { transition-duration: 250ms; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
-  .transition-slow { transition-duration: 350ms; transition-timing-function: ease-in-out; }
-  .transition-slow-spring { transition-duration: 500ms; transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  /* Background Accent Animation */
+  .bg-accent-hover {
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+  .bg-accent-hover:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+  }
+  .bg-accent-hover-subtle {
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+  .bg-accent-hover-subtle:hover {
+    background-color: var(--accent-soft);
+  }
 
-  /* Animation Durations */
-  .duration-instant { animation-duration: 0ms; }
-  .duration-fast { animation-duration: 150ms; }
-  .duration-normal { animation-duration: 200ms; }
-  .duration-normal-spring { animation-duration: 300ms; }
-  .duration-normal-ease { animation-duration: 250ms; }
-  .duration-slow { animation-duration: 350ms; }
-  .duration-slow-spring { animation-duration: 500ms; }
-
-  /* Easing Functions for Animations */
-  .ease-standard { animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
-  .ease-spring { animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .ease-out { animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
-  .ease-in-out { animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
-
-  /* Stagger Delays */
-  .stagger-1 { animation-delay: 50ms; }
-  .stagger-2 { animation-delay: 100ms; }
-  .stagger-3 { animation-delay: 150ms; }
-  .stagger-4 { animation-delay: 200ms; }
-  .stagger-5 { animation-delay: 250ms; }
-
-  /* Transition Utilities */
-  .transition-fast { transition-duration: 150ms; transition-timing-function: ease-out; }
-  .transition-normal { transition-duration: 200ms; transition-timing-function: ease-out; }
-  .transition-normal-spring { transition-duration: 300ms; transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .transition-normal-ease { transition-duration: 250ms; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
-  .transition-slow { transition-duration: 350ms; transition-timing-function: ease-in-out; }
-  .transition-slow-spring { transition-duration: 500ms; transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
-
-  /* Animation Durations */
-  .duration-instant { animation-duration: 0ms; }
-  .duration-fast { animation-duration: 150ms; }
-  .duration-normal { animation-duration: 200ms; }
-  .duration-normal-spring { animation-duration: 300ms; }
-  .duration-normal-ease { animation-duration: 250ms; }
-  .duration-slow { animation-duration: 350ms; }
-  .duration-slow-spring { animation-duration: 500ms; }
-
-  /* Easing Functions for Animations */
-  .ease-standard { animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
-  .ease-spring { animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .ease-out { animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
-  .ease-in-out { animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
-
-  /* Stagger Delays */
-  .stagger-1 { animation-delay: 50ms; }
-  .stagger-2 { animation-delay: 100ms; }
-  .stagger-3 { animation-delay: 150ms; }
-  .stagger-4 { animation-delay: 200ms; }
-  .stagger-5 { animation-delay: 250ms; }
-
-  /* Transition Utilities */
-  .transition-fast { transition-duration: 150ms; transition-timing-function: ease-out; }
-  .transition-normal { transition-duration: 200ms; transition-timing-function: ease-out; }
-  .transition-normal-spring { transition-duration: 300ms; transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .transition-normal-ease { transition-duration: 250ms; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
-  .transition-slow { transition-duration: 350ms; transition-timing-function: ease-in-out; }
-  .transition-slow-spring { transition-duration: 500ms; transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  /* Shimmer Effect */
+  .shimmer {
+    background: linear-gradient(90deg, var(--muted) 25%, var(--surface-elevated) 50%, var(--muted) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
 
   /* Custom hover/active states */
   .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+  .hover\:border-accent\/30:hover { border-color: color-mix(in srgb, var(--accent) 30%, transparent); }
+  .hover\:bg-accent\/10:hover { background-color: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .hover\:bg-accent\/5:hover { background-color: color-mix(in srgb, var(--accent) 5%, transparent); }
   .hover\:bg-gray-50:hover { background-color: #f9fafb; }
   .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
-  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
-  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
-  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
-  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
-  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
-  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
-  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
-  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
+  .hover\:border-accent\/20:hover { border-color: color-mix(in srgb, var(--accent) 20%, transparent); }
 
   /* Transform utilities */
   .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
+  .hover\:-translate-y-1:hover { transform: translateY(-0.25rem); }
+  .hover\:-translate-y-2:hover { transform: translateY(-0.5rem); }
+  .active\:scale-\[0\.97\]:active { transform: scale(0.97); }
   .active\:scale-\[0\.98\]:active { transform: scale(0.98); }
+  .active\:scale-\[0\.99\]:active { transform: scale(0.99); }
 
   /* Brightness utilities */
   .hover\:brightness-105:hover { filter: brightness(1.05); }
+  .hover\:brightness-110:hover { filter: brightness(1.1); }
 
-  /* Border opacity utilities */
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
+  /* Card base styles */
+  .card-base {
+    @apply rounded-[12px] border bg-surface transition-all duration-normal ease-out;
+  }
+  .card-hover {
+    @apply hover:border-accent/50 hover:shadow-lg hover:-translate-y-1;
+  }
+  .card-interactive {
+    @apply card-base card-hover press-scale cursor-pointer;
+  }
 
-  /* Background opacity utilities */
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-
-  /* Background color utilities */
-  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
-  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
-  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-
-  /* Border opacity utilities */
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
-
-  /* Background opacity utilities */
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-
-  /* Background color utilities */
-  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
-  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
-  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-
-  /* Border opacity utilities */
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
-
-  /* Transform utilities */
-  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
-  .active\:scale-\[0\.98\]:active { transform: scale(0.98); }
-
-  /* Brightness utilities */
-  .hover\:brightness-105:hover { filter: brightness(1.05); }
-
-  /* Border opacity utilities */
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
-
-  /* Background opacity utilities */
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-
-  /* Background color utilities */
-  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
-  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
-  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-
-  /* Border opacity utilities */
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
-
-  /* Transform utilities */
-  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
-  .active\:scale-\[0\.98\]:active { transform: scale(0.98); }
-
-  /* Brightness utilities */
-  .hover\:brightness-105:hover { filter: brightness(1.05); }
-
-  /* Border opacity utilities */
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
-
-  /* Background opacity utilities */
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-
-  /* Background color utilities */
-  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
-  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
-  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-
-  /* Border opacity utilities */
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
-
-  /* Transform utilities */
-  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
-  .active\:scale-\[0\.98\]:active { transform: scale(0.98); }
-
-  /* Brightness utilities */
-  .hover\:brightness-105:hover { filter: brightness(1.05); }
-
-  /* Border opacity utilities */
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
-
-  /* Background opacity utilities */
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-
-  /* Background color utilities */
-  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
-  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
-  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-
-  /* Border opacity utilities */
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
-
-  /* Transform utilities */
-  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
-  .active\:scale-\[0\.98\]:active { transform: scale(0.98); }
-
-  /* Brightness utilities */
-  .hover\:brightness-105:hover { filter: brightness(1.05); }
-
-  /* Border opacity utilities */
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
-
-  /* Background opacity utilities */
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-
-  /* Background color utilities */
-  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
-  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
-  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-
-  /* Border opacity utilities */
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
-
-  /* Transform utilities */
-  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
-  .active\:scale-\[0\.98\]:active { transform: scale(0.98); }
-
-  /* Brightness utilities */
-  .hover\:brightness-105:hover { filter: brightness(1.05); }
-
-  /* Border opacity utilities */
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
-
-  /* Background opacity utilities */
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-
-  /* Background color utilities */
-  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
-  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
-  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
-  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
-  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
-
-  /* Border opacity utilities */
-  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
-  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
-
-  /* Transform utilities */
-  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
-  .active\:scale-\[0\.98\]:active { transform: scale(0.98); }
-
-  /* Brightness utilities */
-  .hover\:brightness-105:hover { filter: brightness(1.05); }
-}
+  /* Button enhancements */
+  .btn-primary {
+    @apply bg-accent text-accent-foreground hover:brightness-105 shadow-sm press-scale transition-all duration-fast;
+  }
+  .btn-outline {
+    @apply border-2 border-accent text-accent bg-transparent hover:bg-accent/10 press-scale transition-all duration-fast;
+  }
+  .btn-ghost {
+    @apply bg-transparent hover:bg-surface-elevated press-scale transition-all duration-fast;
+  }
 }

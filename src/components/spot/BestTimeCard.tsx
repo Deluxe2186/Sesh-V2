@@ -38,19 +38,19 @@ export default function BestTimeCard({ spot }: { spot: Spot }) {
   const busiest = data.find((d) => d.value === maxVal);
 
   return (
-    <div className="rounded-[12px] border bg-surface p-5">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+    <div className="rounded-[12px] border bg-surface p-5 card-hover hover-lift-sm animate-fade-in-up stagger-3">
+      <div className="mb-4 flex items-center justify-between animate-stagger-fade-in">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted stagger-1 animate-fade-in-up">
           Best time to go
         </h2>
-        <div className="flex rounded-full border p-0.5">
+        <div className="flex rounded-full border p-0.5 stagger-2 animate-fade-in-up">
           <button
             type="button"
             onClick={() => setMode('time')}
-            className={`rounded-full px-3 py-1 text-xs font-medium ${
+            className={`rounded-full px-3 py-1 text-xs font-medium transition-all duration-fast press-scale ${
               mode === 'time'
-                ? 'bg-accent text-accent-foreground'
-                : 'text-muted'
+                ? 'bg-accent text-accent-foreground shadow-sm'
+                : 'text-muted hover:text-foreground hover:bg-surface-elevated'
             }`}
           >
             Time of day
@@ -58,10 +58,10 @@ export default function BestTimeCard({ spot }: { spot: Spot }) {
           <button
             type="button"
             onClick={() => setMode('day')}
-            className={`rounded-full px-3 py-1 text-xs font-medium ${
+            className={`rounded-full px-3 py-1 text-xs font-medium transition-all duration-fast press-scale ${
               mode === 'day'
-                ? 'bg-accent text-accent-foreground'
-                : 'text-muted'
+                ? 'bg-accent text-accent-foreground shadow-sm'
+                : 'text-muted hover:text-foreground hover:bg-surface-elevated'
             }`}
           >
             Day of week
@@ -69,7 +69,7 @@ export default function BestTimeCard({ spot }: { spot: Spot }) {
         </div>
       </div>
 
-      <div className="h-[200px] w-full">
+      <div className="h-[200px] w-full animate-scale-in stagger-3" style={{ animationDelay: '100ms' }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
@@ -101,11 +101,12 @@ export default function BestTimeCard({ spot }: { spot: Spot }) {
               }}
             />
             <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={48}>
-              {data.map((d) => (
+              {data.map((d, index) => (
                 <Cell
                   key={d.label}
                   fill={d.value === maxVal ? 'var(--accent)' : 'var(--muted)'}
                   fillOpacity={d.value === maxVal ? 1 : 0.4}
+                  className="transition-all duration-fast hover:fill-opacity-100"
                 />
               ))}
             </Bar>
@@ -113,7 +114,7 @@ export default function BestTimeCard({ spot }: { spot: Spot }) {
         </ResponsiveContainer>
       </div>
 
-      <p className="mt-3 text-sm text-muted">
+      <p className="mt-3 text-sm text-muted stagger-4 animate-fade-in-up">
         Busiest in the {busiest?.label.toLowerCase()}.
       </p>
     </div>

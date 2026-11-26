@@ -40,11 +40,11 @@ export default function ThemeQuickToggle() {
   const getIcon = () => {
     switch (settings.theme) {
       case 'light':
-        return <Sun className="h-4 w-4" />;
+        return <Sun className="h-4 w-4 transition-transform duration-normal ease-spring" />;
       case 'dark':
-        return <Moon className="h-4 w-4" />;
+        return <Moon className="h-4 w-4 transition-transform duration-normal ease-spring" />;
       case 'auto':
-        return <Monitor className="h-4 w-4" />;
+        return <Monitor className="h-4 w-4 transition-transform duration-normal ease-spring" />;
     }
   };
 
@@ -64,9 +64,11 @@ export default function ThemeQuickToggle() {
       type="button"
       onClick={cycleTheme}
       aria-label={getAriaLabel()}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-surface text-foreground hover:bg-background"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-surface text-foreground hover:bg-background press-scale transition-all duration-fast ease-out hover:border-accent/30 hover:shadow-md"
     >
-      {getIcon()}
+      <span className="transition-transform duration-normal ease-spring group-hover:rotate-90 group-hover:scale-110">
+        {getIcon()}
+      </span>
     </button>
   );
 }

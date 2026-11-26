@@ -6,6 +6,7 @@ import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import { SeshToaster } from '@/components/SeshToaster';
 import { SettingsProvider } from '@/lib/settings';
 import { SessionProvider } from '@/lib/sessions';
+import PageTransition from '@/components/PageTransition';
 import './globals.css';
 
 const inter = Inter({
@@ -100,7 +101,9 @@ export default function RootLayout({
         <AuthProvider>
           <SettingsProvider>
             <SessionProvider>
-              {children}
+              <PageTransition>
+                {children}
+              </PageTransition>
               <SeshToaster />
               <InstallBanner />
               <ServiceWorkerRegister />
