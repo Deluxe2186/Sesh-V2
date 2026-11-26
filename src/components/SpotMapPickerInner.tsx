@@ -36,8 +36,13 @@ export default function SpotMapPickerInner({
     approximateRef.current = approximate;
   }, [approximate]);
 
+  // Initialize map once when container is ready
   useEffect(() => {
     if (isInitialized.current || !containerRef.current) return;
+
+    // Ensure container has dimensions before initializing
+    const container = containerRef.current;
+    if (container.offsetHeight === 0) return;
 
     let map: L.Map;
     try {
@@ -88,9 +93,9 @@ export default function SpotMapPickerInner({
       mapRef.current = null;
       isInitialized.current = false;
     };
-  }, [lat, lng, disabled, onChange, onError]);
+  }, [disabled, onChange, onError]);
 
-  // Update marker when lat/lng changes from outside
+  // Update marker when lat/lng changes from outside (without re-initializing map)
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !isInitialized.current) return;
