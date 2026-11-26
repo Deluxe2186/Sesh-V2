@@ -58,19 +58,114 @@
   --primary: #f4f4f5;
   --primary-foreground: #0e0e10;
   --secondary: #2a2a2f;
-  --secondary-foreground: #f4f4f5.
-  --destructive: #ef4444.
-  --destructive-foreground: #0e0e10.
-  --ring: #ff5a1f.
-  --input: #3a3a3f.
-  --live: #22c55e.
-  --live-soft: #14532d.
-  --warning: #fbbf24.
-  --warning-soft: #422006.
-  --danger: #ef4444.
-  --danger-soft: #450a0a.
-  --card: #17171a.
-  --card-foreground: #f4f4f5.
+  --secondary-foreground: #f4f4f5;
+  --destructive: #ef4444;
+  --destructive-foreground: #0e0e10;
+  --ring: #ff5a1f;
+  --input: #3a3a3f;
+  --live: #22c55e;
+  --live-soft: #14532d;
+  --warning: #fbbf24;
+  --warning-soft: #422006;
+  --danger: #ef4444;
+  --danger-soft: #450a0a;
+  --card: #17171a;
+  --card-foreground: #f4f4f5;
+  --popover: #17171a;
+  --popover-foreground: #f4f4f5;
+
+  /* Gradients */
+  --gradient-accent: linear-gradient(135deg, #ff5a1f 0%, #ff8c42 100%);
+  --gradient-surface: linear-gradient(135deg, var(--surface) 0%, var(--surface-elevated) 100%);
+  --gradient-accent-soft: linear-gradient(135deg, var(--accent-soft) 0%, transparent 100%);
+}
+
+/* ========================================
+   SPACING TOKENS (4px base unit)
+   ======================================== */
+:root {
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+
+  /* Border Radius */
+  --radius-none: 0;
+  --radius-sm: 0.25rem;     /* 4px */
+  --radius-md: 0.5rem;      /* 8px */
+  --radius-lg: 0.75rem;     /* 12px */
+  --radius-xl: 1rem;        /* 16px */
+  --radius-2xl: 1.5rem;     /* 24px */
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+  /* Typography Scale */
+  --text-display-xl: 4.5rem;   /* 72px */
+  --text-display-lg: 3.5rem;   /* 56px */
+  --text-display-md: 2.25rem;  /* 36px */
+  --text-display-sm: 1.5rem;   /* 24px */
+  --text-xl: 1.25rem;          /* 20px */
+  --text-lg: 1.125rem;         /* 18px */
+  --text-base: 1rem;           /* 16px */
+  --text-sm: 0.875rem;         /* 14px */
+  --text-xs: 0.75rem;          /* 12px */
+
+  /* Animation Durations */
+  --duration-instant: 0ms;
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-normal-spring: 300ms;
+  --duration-normal-ease: 250ms;
+  --duration-slow: 350ms;
+  --duration-slow-spring: 500ms;
+
+  /* Easing Functions */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='dark'] {
+  --background: #0e0e10;
+  --surface: #17171a;
+  --surface-elevated: #1e1e22;
+  --foreground: #f4f4f5;
+  --muted: #a3a3ae;
+  --muted-foreground: #a3a3ae;
+  --border: #3a3a3f;
+  --accent: #ff5a1f;
+  --accent-soft: #3d1a0f;
+  --accent-foreground: #ffffff;
+  --primary: #f4f4f5;
+  --primary-foreground: #0e0e10;
+  --secondary: #2a2a2f;
+  --secondary-foreground: #f4f4f5;
+  --destructive: #ef4444;
+  --destructive-foreground: #0e0e10;
+  --ring: #ff5a1f;
+  --input: #3a3a3f;
+  --live: #22c55e;
+  --live-soft: #14532d;
+  --warning: #fbbf24;
+  --warning-soft: #422006;
+  --danger: #ef4444;
+  --danger-soft: #450a0a;
+  --card: #17171a;
+  --card-foreground: #f4f4f5;
   --popover: #17171a.
   --popover-foreground: #f4f4f5.
 
@@ -391,6 +486,36 @@ input,
   .transition-slow { transition-duration: 350ms; transition-timing-function: ease-in-out; }
   .transition-slow-spring { transition-duration: 500ms; transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
 
+  /* Animation Durations */
+  .duration-instant { animation-duration: 0ms; }
+  .duration-fast { animation-duration: 150ms; }
+  .duration-normal { animation-duration: 200ms; }
+  .duration-normal-spring { animation-duration: 300ms; }
+  .duration-normal-ease { animation-duration: 250ms; }
+  .duration-slow { animation-duration: 350ms; }
+  .duration-slow-spring { animation-duration: 500ms; }
+
+  /* Easing Functions for Animations */
+  .ease-standard { animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+  .ease-spring { animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .ease-out { animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+  .ease-in-out { animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+
+  /* Stagger Delays */
+  .stagger-1 { animation-delay: 50ms; }
+  .stagger-2 { animation-delay: 100ms; }
+  .stagger-3 { animation-delay: 150ms; }
+  .stagger-4 { animation-delay: 200ms; }
+  .stagger-5 { animation-delay: 250ms; }
+
+  /* Transition Utilities */
+  .transition-fast { transition-duration: 150ms; transition-timing-function: ease-out; }
+  .transition-normal { transition-duration: 200ms; transition-timing-function: ease-out; }
+  .transition-normal-spring { transition-duration: 300ms; transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .transition-normal-ease { transition-duration: 250ms; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+  .transition-slow { transition-duration: 350ms; transition-timing-function: ease-in-out; }
+  .transition-slow-spring { transition-duration: 500ms; transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+
   /* Custom hover/active states */
   .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
   .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
@@ -444,6 +569,34 @@ input,
   .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
   .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
   .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+
+  /* Border opacity utilities */
+  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
+  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
+
+  /* Background opacity utilities */
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+
+  /* Background color utilities */
+  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
+  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
+  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+
+  /* Border opacity utilities */
+  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
+  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
+
+  /* Transform utilities */
+  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
+  .active\:scale-\[0\.98\]:active { transform: scale(0.98); }
+
+  /* Brightness utilities */
+  .hover\:brightness-105:hover { filter: brightness(1.05); }
 
   /* Border opacity utilities */
   .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
