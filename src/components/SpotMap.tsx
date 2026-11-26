@@ -56,7 +56,10 @@ export default function SpotMap({
 
         const map = mapRef.current;
         if (map) {
-          map.setView([lat, lng], 16, { animate: true });
+          // Wait for map to be fully ready before setting view
+          map.whenReady(() => {
+            map.setView([lat, lng], 16, { animate: true });
+          });
         }
 
         // Update user marker

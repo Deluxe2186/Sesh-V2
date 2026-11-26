@@ -58,7 +58,10 @@ export default function SpotMapPickerInner({
 
         const map = mapRef.current;
         if (map) {
-          map.setView([newLat, newLng], 16, { animate: true });
+          // Wait for map to be fully ready before setting view
+          map.whenReady(() => {
+            map.setView([newLat, newLng], 16, { animate: true });
+          });
         }
 
         // Update user marker
