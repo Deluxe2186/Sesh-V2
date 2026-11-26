@@ -179,12 +179,12 @@ export default function LandingPage() {
                 className="flex flex-col md:flex-row md:items-start gap-6 md:gap-8 p-0"
               >
                 {/* Number - subtle, not a badge */}
-                <span className="flex-shrink-0 w-8 text-right text-2xl font-bold font-display text-accent/30 md:w-10" aria-hidden="true">
+                <span className="flex-shrink-0 w-8 text-right text-2xl font-bold font-display text-foreground/30 md:w-10" aria-hidden="true">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent/10 text-accent" aria-hidden="true">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-foreground/5 text-foreground" aria-hidden="true">
                       <step.icon className="h-5 w-5" />
                     </div>
                     <h3 className="text-lg font-semibold font-display">
@@ -218,7 +218,7 @@ export default function LandingPage() {
                   'Ghost mode keeps your session private',
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-3" role="listitem">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent/10 text-accent" aria-hidden="true">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground/5 text-foreground" aria-hidden="true">
                       <Check className="h-3 w-3" />
                     </span>
                     {item}
@@ -244,7 +244,7 @@ export default function LandingPage() {
                   'Support the scene, grow your name',
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-3" role="listitem">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent/10 text-accent" aria-hidden="true">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground/5 text-foreground" aria-hidden="true">
                       <Check className="h-3 w-3" />
                     </span>
                     {item}
@@ -252,7 +252,7 @@ export default function LandingPage() {
                 ))}
               </ul>
               <a href="mailto:hello@sesh.ng">
-                <Button variant="outline" className="mt-8 rounded-full w-full min-h-[48px] border-accent text-accent hover:bg-accent/10">
+                <Button variant="outline" className="mt-8 rounded-full w-full min-h-[48px] border-foreground/20 text-foreground hover:bg-foreground/5">
                   Talk to us
                 </Button>
               </a>
