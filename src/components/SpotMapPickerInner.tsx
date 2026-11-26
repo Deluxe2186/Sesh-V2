@@ -58,8 +58,19 @@ export default function SpotMapPickerInner({
 
         const map = mapRef.current;
         if (map) {
-          // Wait for map to be fully ready before setting view
+          // Wait for map to be fully ready and check pane before setting view
           map.whenReady(() => {
+            if (!mapRef.current) return;
+            const mapPane = map.getPane('mapPane');
+            if (!mapPane) {
+              console.warn('Map pane not ready for setView, retrying...');
+              setTimeout(() => {
+                if (mapRef.current) mapRef.current.whenReady(() => {
+                  if (mapRef.current) mapRef.current.setView([newLat, newLng], 16, { animate: true });
+                });
+              }, 50);
+              return;
+            }
             map.setView([newLat, newLng], 16, { animate: true });
           });
         }
@@ -142,14 +153,32 @@ export default function SpotMapPickerInner({
 
       // Wait for map to be fully ready before enabling interactions
       map.whenReady(() => {
-        // Set the proper initial zoom
-        const initialZoom = lat && lng ? 16 : 11;
-        map.setZoom(initialZoom);
+        // Small delay to ensure map pane is fully rendered
+        setTimeout(() => {
+          if (!mapRef.current) return;
 
-        // Enable scroll wheel zoom now that map is ready
-        map.scrollWheelZoom.enable();
+          // Check if map pane exists before any zoom operations
+          const mapPane = map.getPane('mapPane');
+          if (!mapPane) {
+            console.warn('Map pane not ready, retrying...');
+            setTimeout(() => {
+              if (mapRef.current) mapRef.current.whenReady(() => {
+                if (mapRef.current) {
+                  const initialZoom = lat && lng ? 16 : 11;
+                  mapRef.current.setZoom(initialZoom);
+                  mapRef.current.scrollWheelZoom.enable();
+                }
+              });
+            }, 50);
+            return;
+          }
 
-        // Add click handler to place pin
+          // Set the proper initial zoom
+          const initialZoom = lat && lng ? 16 : 11;
+          map.setZoom(initialZoom);
+
+          // Enable scroll wheel zoom now that map is ready
+          map.scrollWheelZoom.enable();
         map.on('click', (e: L.LeafletMouseEvent) => {
           // Don't prevent default or stop propagation - allow clicks to bubble for navigation
           if (disabled) return;
@@ -207,8 +236,19 @@ export default function SpotMapPickerInner({
     if (lat !== null && lng !== null) {
       addMarker(map, lat, lng);
       if (!disabled) {
-        // Wait for map to be fully ready before setting view
+        // Wait for map to be fully ready and check pane before setting view
         map.whenReady(() => {
+          if (!mapRef.current) return;
+          const mapPane = map.getPane('mapPane');
+          if (!mapPane) {
+            console.warn('Map pane not ready for setView, retrying...');
+            setTimeout(() => {
+              if (mapRef.current) mapRef.current.whenReady(() => {
+                if (mapRef.current) mapRef.current.setView([lat, lng], mapRef.current.getZoom(), { animate: true });
+              });
+            }, 50);
+            return;
+          }
           map.setView([lat, lng], map.getZoom(), { animate: true });
         });
       }
