@@ -110,7 +110,29 @@ export default function SpotMapPickerInner({
       map.on('click', (e: L.LeafletMouseEvent) => {
         const newLat = e.latlng.lat;
         const newLng = e.latlng.lng;
-        // onChange(newLat, newLng); // Disabled for now
+        onChange(newLat, newLng);
+
+        // Update marker position
+        if (markerRef.current) {
+          markerRef.current.setLatLng([newLat, newLng]);
+        } else if (mapRef.current) {
+          const markerIcon = L.divIcon({
+            className: 'sesh-marker',
+            html: `
+              <div style="
+                width: 28px;
+                height: 28px;
+                background: #FF5A1F;
+                border: 3px solid #FFFFFF;
+                border-radius: 50%;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+              " />
+            `,
+            iconSize: [28, 28],
+            iconAnchor: [14, 14],
+          });
+          markerRef.current = L.marker([newLat, newLng], { icon: markerIcon }).addTo(mapRef.current!);
+        }
       });
     });
 
