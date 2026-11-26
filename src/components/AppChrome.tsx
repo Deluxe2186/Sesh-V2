@@ -51,7 +51,7 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-[100dvh]">
-      <aside className="fixed inset-y-0 left-0 hidden w-[240px] flex-col lg:flex border-r bg-surface px-4 py-6">
+      <aside className="fixed inset-y-0 left-0 hidden w-[240px] flex-col lg:flex border-r bg-surface px-4 py-6 z-50">
         <Link href="/explore" className="mb-8 px-2 text-2xl font-bold font-display">
           sesh<span className="text-accent">.</span>
         </Link>
@@ -76,7 +76,7 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="flex min-h-[100dvh] min-w-0 flex-1 flex-col lg:ml-[240px]">
-        <header className="sticky top-0 z-40 flex items-center gap-2 border-b bg-background px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] lg:gap-4 lg:px-6 lg:pt-3">
+        <header className="sticky top-0 z-50 flex items-center gap-2 border-b bg-background px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] lg:gap-4 lg:px-6 lg:pt-3">
           {/* Mobile: logo, expanding search */}
           {!searchOpen && (
             <Link
