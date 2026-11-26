@@ -62,6 +62,7 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch={false}
                 className={`rounded-full px-4 py-2 text-sm font-medium ${
                   active
                     ? 'bg-accent text-accent-foreground'
@@ -81,6 +82,7 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
           {!searchOpen && (
             <Link
               href="/explore"
+              prefetch={false}
               className="text-xl font-bold font-display lg:hidden"
             >
               sesh<span className="text-accent">.</span>

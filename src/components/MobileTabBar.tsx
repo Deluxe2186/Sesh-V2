@@ -31,6 +31,7 @@ export default function MobileTabBar() {
             <li key={tab.href} className="flex-1">
               <Link
                 href={tab.href}
+                prefetch={false}
                 aria-current={active ? 'page' : undefined}
                 className={`flex min-h-[56px] flex-col items-center justify-center gap-0.5 text-[11px] font-medium ${
                   active ? 'text-accent' : 'text-muted'
