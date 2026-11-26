@@ -34,7 +34,13 @@ export default function SpotMapPickerInner({
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
   const userMarkerRef = useRef<L.Marker | null>(null);
+  const onChangeRef = useRef(onChange);
   const [locating, setLocating] = useState(false);
+
+  // Keep onChangeRef current
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   function handleLocateMe() {
     if (!navigator.geolocation) {
@@ -110,7 +116,7 @@ export default function SpotMapPickerInner({
       map.on('click', (e: L.LeafletMouseEvent) => {
         const newLat = e.latlng.lat;
         const newLng = e.latlng.lng;
-        onChange(newLat, newLng);
+        onChangeRef.current?.(newLat, newLng);
 
         // Update marker position
         if (markerRef.current) {
