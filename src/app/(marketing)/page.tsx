@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, MapPin, Users, Skull, Sparkles, Shield, Check, MapPin as MapPinIcon } from 'lucide-react';
+import { ChevronDown, MapPin, Users, Skull, Sparkles, Shield, Check } from 'lucide-react';
 import Link from 'next/link';
 import MarketingNav from '@/components/MarketingNav';
 import { Button } from '@/components/ui/button';
@@ -145,7 +145,7 @@ export default function LandingPage() {
                         5 skating now
                       </p>
                     </div>
-                    <MapPinIcon className="ml-auto h-4 w-4 text-accent" />
+                    <MapPin className="ml-auto h-4 w-4 text-accent" />
                   </div>
                 </div>
               </div>
