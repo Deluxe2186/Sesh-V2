@@ -33,7 +33,6 @@ export default function SpotMapPickerInner({
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
   const userMarkerRef = useRef<L.Marker | null>(null);
-  const isInitialized = useRef(false);
   const [locating, setLocating] = useState(false);
 
   function handleLocateMe() {
@@ -85,37 +84,38 @@ export default function SpotMapPickerInner({
 
   // Initialize map once when container is ready
   useEffect(() => {
-    if (containerRef.current && containerRef.current.offsetHeight > 0) {
-      const map = L.map(containerRef.current, {
-        center: [6.5244, 3.3792],
-        zoom: 11,
-        scrollWheelZoom: false,
-        zoomControl: false,
-        attributionControl: false,
+    const container = containerRef.current;
+    if (!container || container.offsetHeight === 0) return;
+
+    const map = L.map(container, {
+      center: [6.5244, 3.3792],
+      zoom: 11,
+      scrollWheelZoom: false,
+      zoomControl: false,
+      attributionControl: false,
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19,
+    }).addTo(map);
+
+    mapRef.current = map;
+
+    map.whenReady(() => {
+      map.scrollWheelZoom.enable();
+
+      map.on('click', (e: L.LeafletMouseEvent) => {
+        const newLat = e.latlng.lat;
+        const newLng = e.latlng.lng;
+        // onChange(newLat, newLng); // Disabled for now
       });
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 19,
-      }).addTo(map);
-
-      mapRef.current = map;
-
-      map.whenReady(() => {
-        map.scrollWheelZoom.enable();
-
-        map.on('click', (e: L.LeafletMouseEvent) => {
-          const newLat = e.latlng.lat;
-          const newLng = e.latlng.lng;
-          // onChange(newLat, newLng); // Disabled for now
-        });
-      });
-    }
+    });
 
     return () => {
-      if (markerRef.current) {
-        markerRef.current.remove();
-        markerRef.current = null;
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
       }
     };
   }, []);
@@ -135,19 +135,8 @@ export default function SpotMapPickerInner({
     }
   }, [lat, lng]);
 
-  // Add or update marker
-  useEffect(() => {
-    const map = markerRef.current;
-    if (!map || !map._loaded) return;
-
-    if (lat !== null && lng !== null) {
-      // Add or update marker logic here
-    }
-  }, [lat, lng]);
-
   return (
     <div
-      ref={containerRef}
       style={{ height, width: '100%' }}
       className="overflow-hidden rounded-[12px] border bg-surface relative"
     >
@@ -155,40 +144,39 @@ export default function SpotMapPickerInner({
         ref={containerRef}
         style={{ height, width: '100%' }}
         className="overflow-hidden rounded-[12px] border bg-surface"
-      >
-        <div className="absolute bottom-4 right-4 z-20">
-          <button
-            type="button"
-            onClick={() => {
-              if (!navigator.geolocation) {
-                alert('Geolocation is not supported by your browser');
-                return;
-              }
-              const map = mapRef.current;
-              if (!map || !map._loaded) return;
-
-              navigator.geolocation.getCurrentPosition(
-                (position) => {
-                  const map = mapRef.current;
-                  if (map) {
-                    map.setView([position.coords.latitude, position.coords.longitude], 16, { animate: true });
-                  }
-                },
-                () => {
-                  alert('Unable to retrieve your location');
-                },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-              );
+      />
+      <div className="absolute bottom-4 right-4 z-20">
+        <button
+          type="button"
+          onClick={() => {
+            if (!navigator.geolocation) {
+              alert('Geolocation is not supported by your browser');
+              return;
             }
-            className="absolute bottom-4 right-4 z-20 inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-sm font-medium text-foreground shadow-lg transition-all hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
-            aria-label="Show my location"
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M12 2v2M12 20v2M2 12h2M20 12h2" />
-            </svg>
-          </button>
-        </div>
+            const map = mapRef.current;
+            if (!map || !map._loaded) return;
+
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const map = mapRef.current;
+                if (map) {
+                  map.setView([position.coords.latitude, position.coords.longitude], 16, { animate: true });
+                }
+              },
+              () => {
+                alert('Unable to retrieve your location');
+              },
+              { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+          }
+          className="absolute bottom-4 right-4 z-20 inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-sm font-medium text-foreground shadow-lg transition-all hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
+          aria-label="Show my location"
+        >
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M12 2v2M12 20v2M2 12h2M20 12h2" />
+          </svg>
+        </button>
       </div>
     </div>
   );
