@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import { cn } from '@/lib/utils';
@@ -42,16 +43,17 @@ export default function SpotMapPickerInner({
     }
 
     const map = mapRef.current;
-    if (!map || !map._loaded) return;
+    // Check if map is ready using type assertion for internal _loaded property
+    if (!map || !(map as L.Map & { _loaded?: boolean })._loaded) return;
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const newLat = position.coords.latitude;
         const newLng = position.coords.longitude;
 
-        const map = mapRef.current;
-        if (map) {
-          map.setView([position.coords.latitude, position.coords.longitude], 16, { animate: true });
+        const mapInstance = mapRef.current;
+        if (mapInstance) {
+          mapInstance.setView([position.coords.latitude, position.coords.longitude], 16, { animate: true });
         }
 
         if (userMarkerRef.current) {
@@ -123,7 +125,7 @@ export default function SpotMapPickerInner({
   // Initialize map with location if provided
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !map._loaded) return;
+    if (!map || !(map as L.Map & { _loaded?: boolean })._loaded) return;
 
     if (lat !== null && lng !== null) {
       const initialZoom = 16;
@@ -154,13 +156,13 @@ export default function SpotMapPickerInner({
               return;
             }
             const map = mapRef.current;
-            if (!map || !map._loaded) return;
+            if (!map || !(map as L.Map & { _loaded?: boolean })._loaded) return;
 
             navigator.geolocation.getCurrentPosition(
               (position) => {
-                const map = mapRef.current;
-                if (map) {
-                  map.setView([position.coords.latitude, position.coords.longitude], 16, { animate: true });
+                const mapInstance = mapRef.current;
+                if (mapInstance) {
+                  mapInstance.setView([position.coords.latitude, position.coords.longitude], 16, { animate: true });
                 }
               },
               () => {
@@ -168,8 +170,8 @@ export default function SpotMapPickerInner({
               },
               { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
-          }
-          className="absolute bottom-4 right-4 z-20 inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-sm font-medium text-foreground shadow-lg transition-all hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
+          }}
+          className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-sm font-medium text-foreground shadow-lg transition-all hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
           aria-label="Show my location"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">

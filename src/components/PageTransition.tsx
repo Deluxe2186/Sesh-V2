@@ -56,13 +56,14 @@ export function ViewTransitionWrapper({ children }: { children: React.ReactNode 
   useEffect(() => {
     if (!pathname) return;
 
-    if (!document.startViewTransition) {
+    // Check for View Transition API support with type assertion
+    if (!('startViewTransition' in document)) {
       setKey((k) => k + 1);
       return;
     }
 
     // Use View Transition API for browsers that support it
-    const transition = document.startViewTransition(() => {
+    const transition = (document as unknown as { startViewTransition: (callback: () => void) => { ready: Promise<void> } }).startViewTransition(() => {
       setKey((k) => k + 1);
     });
 

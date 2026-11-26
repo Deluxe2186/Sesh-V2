@@ -10,6 +10,34 @@ function cssVarColor(name: string) {
   };
 }
 
+const colorNames = [
+  'background',
+  'surface',
+  'foreground',
+  'muted',
+  'muted-foreground',
+  'border',
+  'input',
+  'ring',
+  'accent',
+  'accent-foreground',
+  'primary',
+  'primary-foreground',
+  'secondary',
+  'secondary-foreground',
+  'destructive',
+  'destructive-foreground',
+  'card',
+  'card-foreground',
+  'popover',
+  'popover-foreground',
+  'live',
+  'warning',
+  'danger',
+] as const;
+
+type ColorName = typeof colorNames[number];
+
 const config: Config = {
   darkMode: ['class', '[data-theme="dark"]'],
   content: [
@@ -28,33 +56,11 @@ const config: Config = {
       // become real transparent tints. A plain 'var(--x)' string makes Tailwind
       // 3 ignore the "/20" and paint the colour fully solid, which hid text and
       // switches.
-      colors: Object.fromEntries(
-        [
-          'background',
-          'surface',
-          'foreground',
-          'muted',
-          'muted-foreground',
-          'border',
-          'input',
-          'ring',
-          'accent',
-          'accent-foreground',
-          'primary',
-          'primary-foreground',
-          'secondary',
-          'secondary-foreground',
-          'destructive',
-          'destructive-foreground',
-          'card',
-          'card-foreground',
-          'popover',
-          'popover-foreground',
-          'live',
-          'warning',
-          'danger',
-        ].map((name) => [name, cssVarColor(name)])
-      ),
+      // @ts-expect-error - Tailwind's types don't recognize function-based colors, but this works at runtime
+      colors: colorNames.reduce<Record<ColorName, ReturnType<typeof cssVarColor>>>((acc, name) => {
+        acc[name] = cssVarColor(name);
+        return acc;
+      }, {} as Record<ColorName, ReturnType<typeof cssVarColor>>),
       borderRadius: {
         DEFAULT: '12px',
         card: '12px',
