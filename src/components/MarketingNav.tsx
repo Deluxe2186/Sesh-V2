@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 export default function MarketingNav() {
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center px-4 sm:px-6">
         <Link href="/" className="text-2xl font-bold font-display">
           sesh<span className="text-accent">.</span>

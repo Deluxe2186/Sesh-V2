@@ -170,6 +170,18 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
         ))}
       </div>
 
+      {/* Start a session button - above map on mobile, above left panel on desktop */}
+      <div className="flex justify-end lg:justify-between gap-3 shrink-0">
+        <button
+          type="button"
+          onClick={() => setSessionOpen(true)}
+          className="inline-flex min-h-[48px] items-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-lg transition-transform hover:scale-[1.02]"
+        >
+          <Zap className="h-4 w-4" />
+          Start a session
+        </button>
+      </div>
+
       {/* Left panel */}
       <aside
         className={`min-h-0 w-full flex-1 flex-col gap-4 overflow-y-auto pr-1 lg:flex lg:w-[380px] lg:flex-none lg:shrink-0 ${
@@ -321,15 +333,6 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
         />
 
       </div>
-
-      <button
-        type="button"
-        onClick={() => setSessionOpen(true)}
-        className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-30 inline-flex min-h-[48px] items-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-lg transition-transform hover:scale-[1.02] lg:absolute lg:bottom-6 lg:right-6 lg:min-h-0"
-      >
-        <Zap className="h-4 w-4" />
-        Start a session
-      </button>
 
       <Dialog open={sessionOpen} onOpenChange={setSessionOpen}>
         <DialogContent className="sm:max-w-md">
