@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Check, MapPin, Clock, Shield, Home, Loader2, ArrowLeft, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -275,9 +276,12 @@ export default function Step4Review({
               {formData.files.map((file, index) => (
                 <div key={`${file.name}-${index}`} className="rounded-lg border bg-surface p-2">
                   <div className="aspect-square rounded-[8px] overflow-hidden bg-secondary mb-2">
-                    <img
+                    <Image
                       src={file.thumbnail}
-                      alt={file.name}
+                      alt={file.name || 'Uploaded proof'}
+                      width={320}
+                      height={320}
+                      unoptimized
                       className="h-full w-full object-cover"
                     />
                   </div>

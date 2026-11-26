@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MapPin, Sunrise, Sun, Sunset, Moon, Calendar } from 'lucide-react';
 import { getSpots } from '@/lib/api';
 import type { Spot, BusyByTime } from '@/types';
@@ -30,16 +30,19 @@ export default function HeatmapPage() {
   const [isWeekend, setIsWeekend] = useState(false);
   const [selectedSpotId, setSelectedSpotId] = useState<string | null>(null);
 
-  // Load spots
-  const loadSpots = async () => {
-    const spotsData = await getSpots();
-    setSpots(spotsData);
-  };
+  // Load spots after mount; never update React state during render.
+  const loadSpots = useCallback(async () => {
+    try {
+      const spotsData = await getSpots();
+      setSpots(spotsData);
+    } catch (error) {
+      console.error('Failed to load heatmap spots:', error);
+    }
+  }, []);
 
-  // We need to trigger loading on mount
-  if (typeof window !== 'undefined' && spots.length === 0) {
-    loadSpots();
-  }
+  useEffect(() => {
+    void loadSpots();
+  }, [loadSpots]);
 
   // Determine the busiest spot for the current time filter
   const busiestSpot = useMemo(() => {

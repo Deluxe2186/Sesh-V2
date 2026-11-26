@@ -3,7 +3,7 @@
 import 'leaflet/dist/leaflet.css';
 
 import L from 'leaflet';
-import { useEffect, useRef, useMemo } from 'react';
+import { useCallback, useEffect, useRef, useMemo } from 'react';
 import type { Spot, BusyByTime } from '@/types';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/lib/settings';
@@ -38,26 +38,26 @@ export default function HeatmapMap({
     Math.max(...spots.map(s => s.weeklyVisits), 1), [spots]);
 
   // Color scale: soft yellow (quiet) to deep orange (busiest)
-  const getColor = (visits: number) => {
+  const getColor = useCallback((visits: number) => {
     const ratio = visits / maxWeeklyVisits;
     // Interpolate from soft yellow to deep orange
     const r = Math.round(255);
     const g = Math.round(255 * (1 - ratio * 0.6));
     const b = Math.round(0);
     return `rgb(${r}, ${g}, ${b})`;
-  };
+  }, [maxWeeklyVisits]);
 
-  const getRadius = (visits: number) => {
+  const getRadius = useCallback((visits: number) => {
     const ratio = visits / maxWeeklyVisits;
     // Radius between 150m and 1500m
     return 150 + ratio * 1350;
-  };
+  }, [maxWeeklyVisits]);
 
-  const getOpacity = (visits: number) => {
+  const getOpacity = useCallback((visits: number) => {
     const ratio = visits / maxWeeklyVisits;
     // Opacity between 0.15 and 0.6
     return 0.15 + ratio * 0.45;
-  };
+  }, [maxWeeklyVisits]);
 
   // Initialize map
   useEffect(() => {
@@ -157,7 +157,7 @@ export default function HeatmapMap({
         });
       }
     });
-  }, [spots, timeOfDay, isWeekend, selectedSpotId, onSpotClick]);
+  }, [spots, timeOfDay, isWeekend, selectedSpotId, onSpotClick, getColor, getRadius, getOpacity]);
 
   // Fly to spot when selectedSpotId changes
   useEffect(() => {
