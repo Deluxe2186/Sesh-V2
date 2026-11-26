@@ -145,7 +145,7 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
   }
 
   return (
-    <div className="relative flex h-[calc(100dvh-11rem-env(safe-area-inset-bottom))] flex-col gap-3 lg:h-[calc(100dvh-64px)] lg:flex-row lg:gap-6">
+    <div className="relative flex h-[calc(100dvh-11rem-env(safe-area-inset-bottom))] flex-col gap-3 lg:h-[calc(100dvh-64px)] lg:flex-row lg:gap-6 overflow-hidden">
       {/* Map | List switch (phones only) */}
       <div
         role="tablist"
@@ -176,12 +176,12 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
           view === 'list' ? "flex" : "hidden"
         }`}
       >
-        <div>
+        <div className="flex-shrink-0">
           <h1 className="text-2xl font-bold font-display">Spots near you</h1>
           <p className="mt-1 text-sm text-muted">Sorted by live activity</p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex-shrink-0 flex flex-wrap gap-2">
           {FILTER_PILLS.map((pill) => {
             const active = activePills.has(pill.id);
             return (
@@ -201,7 +201,7 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
           })}
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 min-h-0 overflow-y-auto pr-1 pb-4">
           {loading ? (
             Array.from({ length: 4 }).map((_, i) => <CardSkeleton key={i} />)
           ) : filtered.length === 0 ? (
@@ -306,7 +306,7 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
 
       {/* Map */}
       <div
-        className={`relative min-h-0 flex-1 lg:block ${
+        className={`relative min-h-0 flex-1 lg:flex-1 lg:block overflow-hidden ${
           view === 'map' ? "block" : "hidden"
         }`}
       >
