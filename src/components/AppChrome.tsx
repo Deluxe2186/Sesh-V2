@@ -76,7 +76,11 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
         </nav>
       </aside>
 
-      <div className="flex min-h-[100dvh] min-w-0 flex-1 flex-col lg:ml-[240px]">
+      <div
+        className={`flex min-w-0 flex-1 flex-col lg:ml-[240px] ${
+          pathname === '/explore' ? 'h-[100dvh] overflow-hidden' : 'min-h-[100dvh]'
+        }`}
+      >
         <header className="sticky top-0 z-[60] flex items-center gap-2 border-b bg-background px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] lg:gap-4 lg:px-6 lg:pt-3">
           {/* Mobile: logo, expanding search */}
           {!searchOpen && (
@@ -171,7 +175,13 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
             </DropdownMenu>
           </div>
         </header>
-        <main className="flex-1 px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-5 lg:px-6 lg:pb-8 lg:pt-8">
+        <main
+          className={
+            pathname === '/explore'
+              ? 'flex min-h-0 flex-1 flex-col overflow-hidden px-4 pb-[calc(4rem+env(safe-area-inset-bottom))] pt-3 lg:px-6 lg:pb-4 lg:pt-4'
+              : 'flex-1 px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-5 lg:px-6 lg:pb-8 lg:pt-8'
+          }
+        >
           {children}
         </main>
         <MobileTabBar />

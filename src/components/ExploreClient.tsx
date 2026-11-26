@@ -224,7 +224,7 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
   }
 
   return (
-    <div className="relative flex h-[calc(100dvh-11rem-env(safe-area-inset-bottom))] flex-col gap-3 lg:h-[calc(100dvh-64px)] lg:flex-row lg:gap-6 overflow-hidden animate-fade-in-up">
+    <div className="relative flex min-h-0 flex-1 flex-col gap-3 overflow-hidden animate-fade-in-up">
       {/* Map | List switch (phones only) */}
       <div
         role="tablist"
@@ -249,8 +249,8 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
         ))}
       </div>
 
-      {/* Start a session button - above map on mobile, above left panel on desktop */}
-      <div className="flex justify-end lg:justify-between gap-3 shrink-0 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+      {/* Mobile session action stays above the active map/list view. */}
+      <div className="flex shrink-0 justify-end animate-fade-in-up lg:hidden" style={{ animationDelay: '100ms' }}>
         <button
           type="button"
           onClick={() => setSessionOpen(true)}
@@ -262,6 +262,7 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
         </button>
       </div>
 
+      <div className="flex min-h-0 min-w-0 flex-1 gap-3 lg:gap-6">
       {/* Left panel */}
       <aside
         className={`min-h-0 w-full flex-1 flex-col gap-4 overflow-y-auto pr-1 lg:flex lg:w-[380px] lg:flex-none lg:shrink-0 animate-fade-in-right ${
@@ -339,23 +340,35 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
         )}
       </aside>
 
-      {/* Map */}
-      <div
-        className={`relative min-h-0 flex-1 lg:flex-1 lg:block overflow-hidden animate-fade-in-up ${
-          view === 'map' ? "block" : "hidden"
+      {/* Map column: desktop session action sits directly above the map. */}
+      <section
+        className={`min-h-0 min-w-0 flex-1 flex-col gap-3 lg:flex ${
+          view === 'map' ? 'flex' : 'hidden'
         }`}
-        style={{ animationDelay: '100ms' }}
       >
-        <SpotMapClient
-          spots={mapSpots}
-          selectedId={selectedId}
-          hoveredId={hoveredId}
-          onSelect={(id) => setSelectedId(id)}
-          onHover={setHoveredId}
-          onView={(id) => router.push(`/spot/${id}`)}
-          height="100%"
-        />
-
+        <div className="hidden shrink-0 justify-end lg:flex animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+          <button
+            type="button"
+            onClick={() => setSessionOpen(true)}
+            className="inline-flex min-h-[48px] items-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-lg hover-lift press-scale transition-all duration-fast"
+            aria-label="Start a skate session"
+          >
+            <Zap className="h-4 w-4 transition-transform group-hover:rotate-12" />
+            Start a session
+          </button>
+        </div>
+        <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+          <SpotMapClient
+            spots={mapSpots}
+            selectedId={selectedId}
+            hoveredId={hoveredId}
+            onSelect={(id) => setSelectedId(id)}
+            onHover={setHoveredId}
+            onView={(id) => router.push(`/spot/${id}`)}
+            height="100%"
+          />
+        </div>
+      </section>
       </div>
 
       <Dialog open={sessionOpen} onOpenChange={setSessionOpen}>
