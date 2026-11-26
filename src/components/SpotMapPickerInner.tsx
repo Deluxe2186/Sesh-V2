@@ -162,7 +162,7 @@ export default function SpotMapPickerInner({
   return (
     <div
       style={{ height, width: '100%' }}
-      className="overflow-hidden rounded-[12px] border bg-surface relative"
+      className="rounded-[12px] border bg-surface relative"
     >
       <div
         ref={containerRef}
