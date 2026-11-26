@@ -120,11 +120,14 @@ export default function SpotMapPickerInner({
     if (rect.width === 0 || rect.height === 0) return;
 
     let map: L.Map;
+    let observer: ResizeObserver | null = null;
     try {
+      // Initialize map without zoom and without scroll wheel zoom
+      // These will be enabled after the map is fully ready
       map = L.map(containerRef.current, {
         center: lat && lng ? [lat, lng] : LAGOS_CENTER,
-        zoom: lat && lng ? 16 : 11,
-        scrollWheelZoom: true,
+        zoom: 11, // Default zoom, will be updated after map is ready
+        scrollWheelZoom: false, // Disabled initially, enabled after map is ready
       });
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -137,32 +140,52 @@ export default function SpotMapPickerInner({
       isInitialized.current = true;
       onError(null);
 
-      // Add click handler to place pin
-      map.on('click', (e: L.LeafletMouseEvent) => {
-        // Don't prevent default or stop propagation - allow clicks to bubble for navigation
-        if (disabled) return;
-        let newLat = e.latlng.lat;
-        let newLng = e.latlng.lng;
+      // Wait for map to be fully ready before enabling interactions
+      map.whenReady(() => {
+        // Set the proper initial zoom
+        const initialZoom = lat && lng ? 16 : 11;
+        map.setZoom(initialZoom);
 
-        // Apply approximate jitter if enabled
-        if (approximateRef.current) {
-          newLat += (Math.random() - 0.5) * 0.004; // ±0.002°
-          newLng += (Math.random() - 0.5) * 0.004; // ±0.002°
+        // Enable scroll wheel zoom now that map is ready
+        map.scrollWheelZoom.enable();
+
+        // Add click handler to place pin
+        map.on('click', (e: L.LeafletMouseEvent) => {
+          // Don't prevent default or stop propagation - allow clicks to bubble for navigation
+          if (disabled) return;
+          let newLat = e.latlng.lat;
+          let newLng = e.latlng.lng;
+
+          // Apply approximate jitter if enabled
+          if (approximateRef.current) {
+            newLat += (Math.random() - 0.5) * 0.004; // ±0.002°
+            newLng += (Math.random() - 0.5) * 0.004; // ±0.002°
+          }
+
+          onChange(newLat, newLng);
+        });
+
+        // Add initial marker if lat/lng provided
+        if (lat !== null && lng !== null) {
+          addMarker(map, lat, lng);
         }
 
-        onChange(newLat, newLng);
+        // The map can start hidden (phone list view). Re-measure when it appears.
+        observer =
+          typeof ResizeObserver !== 'undefined'
+            ? new ResizeObserver(() => {
+                if (mapRef.current) {
+                  mapRef.current.invalidateSize();
+                }
+              })
+            : null;
+        observer?.observe(containerRef.current);
       });
 
-      // Add initial marker if lat/lng provided
-      if (lat !== null && lng !== null) {
-        addMarker(map, lat, lng);
-      }
-    } catch (err) {
-      onError('Failed to load map. Please try again.');
-      console.error('Map initialization error:', err);
-    }
-
     return () => {
+      if (observer) {
+        observer.disconnect();
+      }
       if (map) {
         map.remove();
       }
