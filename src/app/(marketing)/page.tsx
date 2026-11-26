@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, MapPin, Users, Skull, MapPin as MapPinIcon, Sparkles, Shield } from 'lucide-react';
+import { ChevronDown, MapPin, Users, Skull, Sparkles, Shield } from 'lucide-react';
 import Link from 'next/link';
 import MarketingNav from '@/components/MarketingNav';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ const STEPS = [
     n: '01',
     title: 'Find a spot',
     body: 'Browse verified spots across Lagos — plazas, stairs, rails, banks and flatground — filtered by area and obstacles.',
-    icon: MapPinIcon,
+    icon: MapPin,
   },
   {
     n: '02',
@@ -41,7 +41,7 @@ const STEPS = [
 
 const TRUST_SIGNALS = [
   { label: 'Active skaters', value: '2,800+', icon: Users },
-  { label: 'Verified spots', value: '47', icon: MapPinIcon },
+  { label: 'Verified spots', value: '47', icon: MapPin },
   { label: 'Weekly sessions', value: '120+', icon: Sparkles },
 ];
 
