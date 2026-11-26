@@ -124,7 +124,7 @@ export default function Step1Basics({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Spot name</FormLabel>
+              <FormLabel className="text-foreground font-bold">Spot name</FormLabel>
               <FormControl>
                 <Input
                   placeholder="e.g. Stadium, Church Street, Waf Skatepark"
@@ -143,7 +143,7 @@ export default function Step1Basics({
           name="area"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Area</FormLabel>
+              <FormLabel className="text-foreground font-bold">Area</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={field.onChange}
@@ -173,7 +173,7 @@ export default function Step1Basics({
           name="howToFind"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>How to find it</FormLabel>
+              <FormLabel className="text-foreground font-bold">How to find it</FormLabel>
               <FormControl>
                 <Input
                   placeholder="e.g. Behind the train station, near Gate C"
@@ -226,7 +226,7 @@ export default function Step1Basics({
 
             return (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel className="text-foreground font-bold">Description</FormLabel>
                 <FormControl>
                   <div className="space-y-3">
                     {/* Obstacle buttons */}
@@ -325,7 +325,7 @@ export default function Step1Basics({
             name="surface"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Surface quality</FormLabel>
+                <FormLabel className="text-foreground font-bold">Surface quality</FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
@@ -354,7 +354,7 @@ export default function Step1Basics({
             name="shelter"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Shelter</FormLabel>
+                <FormLabel className="text-foreground font-bold">Shelter</FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
@@ -418,7 +418,7 @@ export default function Step1Basics({
 
             return (
               <FormItem>
-                <FormLabel>Best time to skate</FormLabel>
+                <FormLabel className="text-foreground font-bold">Best time to skate</FormLabel>
                 <FormControl>
                   <div className="space-y-3">
                     {/* Day buttons */}
@@ -539,7 +539,7 @@ export default function Step1Basics({
           name="securityLevel"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Security and disturbance</FormLabel>
+              <FormLabel className="text-foreground font-bold">Security and disturbance</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={field.onChange}
@@ -568,7 +568,7 @@ export default function Step1Basics({
           name="securityNote"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Security note</FormLabel>
+              <FormLabel className="text-foreground font-bold">Security note</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="e.g. Guards usually ask us to leave after 6pm. Private security patrols after 10pm."
@@ -589,7 +589,7 @@ export default function Step1Basics({
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <MapPin className="h-5 w-5 text-muted" />
-            <FormLabel className="mb-0">Location</FormLabel>
+            <FormLabel className="mb-0 text-foreground font-bold">Location</FormLabel>
           </div>
           <Controller
             control={form.control}
