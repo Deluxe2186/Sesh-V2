@@ -42,7 +42,11 @@ export default function SpotMapPickerInner({
 
     // Ensure container has dimensions before initializing
     const container = containerRef.current;
-    if (container.offsetHeight === 0) return;
+    if (container.offsetHeight === 0 || container.offsetWidth === 0) return;
+
+    // Check if container is visible in viewport
+    const rect = container.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
 
     let map: L.Map;
     try {
@@ -64,6 +68,7 @@ export default function SpotMapPickerInner({
 
       // Add click handler to place pin
       map.on('click', (e: L.LeafletMouseEvent) => {
+        // Don't prevent default or stop propagation - allow clicks to bubble for navigation
         if (disabled) return;
         let newLat = e.latlng.lat;
         let newLng = e.latlng.lng;
