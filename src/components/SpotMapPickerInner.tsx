@@ -34,98 +34,30 @@ export default function SpotMapPickerInner({
   const markerRef = useRef<L.Marker | null>(null);
   const userMarkerRef = useRef<L.Marker | null>(null);
   const isInitialized = useRef(false);
-  const mapReady = useRef(false);
-  const initializationAttempted = useRef(false);
   const approximateRef = useRef(approximate);
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState<string | null>(null);
 
-  // Keep approximate ref in sync
   useEffect(() => {
     approximateRef.current = approximate;
   }, [approximate]);
 
-  function checkMapPaneReady(map: L.Map): boolean {
-    try {
-      const pane = map.getPane('mapPane');
-      return !!pane && pane.style.transform !== undefined && pane.style.transform !== '';
-    } catch {
-      return false;
-    }
-  }
-
-  function waitForMapPane(map: L.Map, maxAttempts = 30): Promise<boolean> {
-    return new Promise((resolve) => {
-      let attempts = 0;
-      const check = () => {
-        if (map._container && map._container.offsetWidth > 0 && map.getPane('mapPane')) {
-          const pane = map.getPane('mapPane');
-          if (pane && pane.style.transform && pane.style.transform !== '') {
-            resolve(true);
-            return;
-          }
-        }
-        if (attempts >= 50) {
-          console.warn('Map pane not ready after max attempts, proceeding anyway');
-          resolve(false);
-        } else {
-          attempts++;
-          setTimeout(check, 50);
-        }
-      };
-      check();
-    });
-  }
-
-  async function safeSetView(map: L.Map, center: [number, number], zoom: number, animate = true): Promise<void> {
-    if (!map || !map._container) return;
-    const ready = await new Promise<boolean>((resolve) => {
-      let attempts = 0;
-      const check = () => {
-        if (map.getPane('mapPane')?.style.transform) {
-          resolve(true);
-        } else if (attempts >= 30) {
-          resolve(false);
-        } else {
-          setTimeout(check, 50);
-        }
-      };
-      check();
-    });
-    if (!ready) {
-      console.warn('Map pane not ready for setView, skipping');
-      return;
-    }
-    try {
-      map.setView(center, zoom, { animate });
-    } catch (err) {
-      console.warn('setView failed:', err);
-    }
-  }
-
   function handleLocateMe() {
     if (!navigator.geolocation) {
-      setLocateError('Geolocation is not supported by your browser');
+      alert('Geolocation is not supported by your browser');
       return;
     }
-    setLocating(true);
-    setLocateError(null);
+
+    const map = mapRef.current;
+    if (!map || !map._loaded) return;
 
     navigator.geolocation.getCurrentPosition(
-      async (position) => {
+      (position) => {
         const newLat = position.coords.latitude;
         const newLng = position.coords.longitude;
 
-        const map = mapRef.current;
-        if (map && map._loaded) {
-          try {
-            map.setView([newLat, newLng], 16, { animate: true });
-          } catch (err) {
-            console.warn('setView failed:', err);
-          }
-        }
+        map.setView([newLat, newLng], 16, { animate: true });
 
-        // Update user marker
         if (userMarkerRef.current) {
           userMarkerRef.current.setLatLng([newLat, newLng]);
         } else if (mapRef.current) {
@@ -146,23 +78,9 @@ export default function SpotMapPickerInner({
           });
           userMarkerRef.current = L.marker([newLat, newLng], { icon: userIcon }).addTo(mapRef.current!);
         }
-
-        onLocateMe?.(newLat, newLng);
-        onChange(newLat, newLng);
-        setLocating(false);
-        setLocateError(null);
       },
       (error) => {
-        let message = 'Unable to retrieve your location';
-        if (error.code === error.PERMISSION_DENIED) {
-          message = 'Location access was denied. Please enable it in your browser settings.';
-        } else if (error.code === error.POSITION_UNAVAILABLE) {
-          message = 'Location information is unavailable';
-        } else if (error.code === error.TIMEOUT) {
-          message = 'Location request timed out';
-        }
-        setLocateError(message);
-        setLocating(false);
+        alert('Unable to retrieve your location');
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
@@ -170,28 +88,19 @@ export default function SpotMapPickerInner({
 
   // Initialize map once when container is ready
   useEffect(() => {
-    if (isInitialized.current || initializationAttempted.current || !containerRef.current) return;
+    if (isInitialized.current || !containerRef.current) return;
 
-    // Ensure container has dimensions before initializing
     const container = containerRef.current;
     if (container.offsetHeight === 0 || container.offsetWidth === 0) return;
 
-    // Check if container is visible in viewport
     const rect = container.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return;
 
-    initializationAttempted.current = true;
-
     let map: L.Map;
-    let observer: ResizeObserver | null = null;
-    let mapReady = false;
-
     try {
-      // Initialize map without zoom and without scroll wheel zoom
-      // These will be enabled after the map is fully ready
       map = L.map(containerRef.current, {
         center: lat && lng ? [lat, lng] : [6.5244, 3.3792],
-        zoom: 11,
+        zoom: lat && lng ? 16 : 11,
         scrollWheelZoom: false,
         zoomControl: false,
         attributionControl: false,
@@ -203,30 +112,10 @@ export default function SpotMapPickerInner({
       }).addTo(map);
 
       mapRef.current = map;
-      isInitialized.current = true;
-      onError(null);
 
-      // Setup map after it's fully ready
-      const setupMap = () => {
-        if (mapReady) return;
-        mapReady = true;
+      map.whenReady(() => {
+        map.scrollWheelZoom.enable();
 
-        // Set proper initial zoom
-        const initialZoom = lat && lng ? 16 : 11;
-        try {
-          map.setZoom(lat && lng ? 16 : 11);
-        } catch (err) {
-          console.warn('Initial setZoom failed:', err);
-        }
-
-        // Enable scroll wheel zoom now that map is ready
-        try {
-          map.scrollWheelZoom.enable();
-        } catch (err) {
-          console.warn('scrollWheelZoom.enable failed:', err);
-        }
-
-        // Add click handler to place pin
         map.on('click', (e: L.LeafletMouseEvent) => {
           if (disabled) return;
           let newLat = e.latlng.lat;
@@ -240,53 +129,27 @@ export default function SpotMapPickerInner({
           onChange(newLat, newLng);
         });
 
-        // Add initial marker if lat/lng provided
         if (lat !== null && lng !== null) {
           addMarker(map, lat, lng);
         }
-
-        // The map can start hidden (phone list view). Re-measure when it appears.
-        const observer = typeof ResizeObserver !== 'undefined'
-          ? new ResizeObserver(() => {
-              if (mapRef.current) {
-                try {
-                  mapRef.current.invalidateSize();
-                } catch (err) {
-                  console.warn('invalidateSize failed:', err);
-                }
-              }
-            })
-          : null;
-        observer?.observe(containerRef.current);
-      };
-
-      // Use map.whenReady with a small delay to ensure DOM is ready
-      setTimeout(() => {
-        map.whenReady(() => {
-          setupMap();
-        });
-      }, 50);
+      });
 
     } catch (err) {
-      onError('Failed to load map. Please try again.');
       console.error('Map initialization error:', err);
+      onError('Failed to load map. Please try again.');
     }
 
     return () => {
-      if (observer) {
-        observer.disconnect();
-      }
-      if (map) {
+      if (mapRef.current) {
         try {
-          map.remove();
+          mapRef.current.remove();
         } catch (err) {
           console.warn('map.remove failed:', err);
         }
+        mapRef.current = null;
       }
-      mapRef.current = null;
-      isInitialized.current = false;
     };
-  }, [disabled, onChange, onError]);
+  }, []);
 
   // Update marker when lat/lng changes from outside (without re-initializing map)
   useEffect(() => {
@@ -294,20 +157,17 @@ export default function SpotMapPickerInner({
     if (!map || !map._loaded) return;
 
     if (lat !== null && lng !== null) {
-      addMarker(map, lat, lng);
+      addMarker(lat, lng);
       if (!disabled) {
-        map.whenReady(() => {
-          if (map._loaded) {
-            map.setView([lat, lng], map.getZoom(), { animate: true });
-          }
-        });
-      } else if (markerRef.current) {
-        markerRef.current.remove();
-        markerRef.current = null;
+        map.setView([lat, lng], map.getZoom(), { animate: true });
       }
-    }, [lat, lng, disabled]);
+    } else if (markerRef.current) {
+      markerRef.current.remove();
+      markerRef.current = null;
+    }
+  }, [lat, lng, disabled]);
 
-  function addMarker(map: L.Map, latitude: number, longitude: number) {
+  function addMarker(latitude: number, longitude: number) {
     if (markerRef.current) {
       markerRef.current.setLatLng([latitude, longitude]);
     } else {
@@ -342,8 +202,8 @@ export default function SpotMapPickerInner({
 
       markerRef.current = L.marker([latitude, longitude], {
         icon: pinIcon,
-        draggable: !disabled,
-      }).addTo(map);
+        draggable: true,
+      }).addTo(mapRef.current!);
 
       markerRef.current.on('dragend', (e) => {
         let newLat = e.target.getLatLng().lat;
@@ -359,13 +219,11 @@ export default function SpotMapPickerInner({
         }
       });
     }
-  }
 
-  // Keep approximate ref in sync
-  const approximateRef = { current: approximate };
+  const approximateRef = { current: true };
   useEffect(() => {
-    approximateRef.current = approximate;
-  }, [approximate]);
+    approximateRef.current = true;
+  }, []);
 
   return (
     <div
@@ -376,7 +234,7 @@ export default function SpotMapPickerInner({
         disabled && 'opacity-50 cursor-not-allowed'
       )}
     >
-      {showLocateMe && !disabled && (
+      {!disabled && (
         <button
           type="button"
           onClick={() => {
@@ -391,10 +249,13 @@ export default function SpotMapPickerInner({
               (position) => {
                 const newLat = position.coords.latitude;
                 const newLng = position.coords.longitude;
-                map.setView([newLat, newLng], 16, { animate: true });
+                const map = mapRef.current;
+                if (map) {
+                  map.setView([position.coords.latitude, position.coords.longitude], 16, { animate: true });
+                }
 
                 if (userMarkerRef.current) {
-                  userMarkerRef.current.setLatLng([newLat, newLng]);
+                  userMarkerRef.current.setLatLng([position.coords.latitude, position.coords.longitude]);
                 } else if (mapRef.current) {
                   const userIcon = L.divIcon({
                     className: 'sesh-user-marker',
@@ -411,10 +272,10 @@ export default function SpotMapPickerInner({
                     iconSize: [20, 20],
                     iconAnchor: [10, 10],
                   });
-                  userMarkerRef.current = L.marker([newLat, newLng], { icon: userIcon }).addTo(map);
+                  userMarkerRef.current = L.marker([position.coords.latitude, position.coords.longitude], { icon: userIcon }).addTo(mapRef.current!);
                 }
               },
-              (error) => {
+              () => {
                 alert('Unable to retrieve your location');
               },
               { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
