@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
-import { MapPin } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { MapPin, Plus, Check } from 'lucide-react';
 import SpotMapPicker from '@/components/SpotMapPicker';
 import {
   Form,
@@ -40,6 +40,20 @@ const areas = [
   'Alapere',
   'Lagos Island',
   'Other',
+] as const;
+
+const OBSTACLE_OPTIONS = [
+  { id: 'Stairs', label: 'Stairs' },
+  { id: 'Ramp', label: 'Ramp' },
+  { id: 'Rail', label: 'Rail' },
+  { id: 'Ledge', label: 'Ledge' },
+  { id: 'Gap', label: 'Gap' },
+  { id: 'Flatground', label: 'Flatground' },
+  { id: 'Bank', label: 'Bank' },
+  { id: 'Manual pad', label: 'Manual pad' },
+  { id: 'Hubba', label: 'Hubba' },
+  { id: 'Quarter pipe', label: 'Quarter pipe' },
+  { id: 'Pole jam', label: 'Pole jam' },
 ] as const;
 
 const surfaces = ['Smooth', 'Average', 'Rough'] as const;
@@ -175,24 +189,133 @@ export default function Step1Basics({
           )}
         />
 
-        {/* Description */}
+        {/* Description with obstacle buttons */}
         <FormField
           control={form.control}
           name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Describe the spot: obstacles, vibe, surface details, anything skaters should know..."
-                  rows={4}
-                  {...field}
-                  disabled={disabled}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            const [selectedObstacles, setSelectedObstacles] = useState<string[]>([]);
+            const [customObstacle, setCustomObstacle] = useState('');
+
+            const toggleObstacle = (obstacle: string) => {
+              if (selectedObstacles.includes(obstacle)) {
+                setSelectedObstacles(selectedObstacles.filter((o) => o !== obstacle));
+              } else {
+                setSelectedObstacles([...selectedObstacles, obstacle]);
+              }
+            };
+
+            const addCustomObstacle = () => {
+              if (customObstacle.trim() && !selectedObstacles.includes(customObstacle.trim())) {
+                setSelectedObstacles([...selectedObstacles, customObstacle.trim()]);
+                setCustomObstacle('');
+              }
+            };
+
+            // Build description from selected obstacles + free text
+            const obstacleText = selectedObstacles.length > 0
+              ? `Obstacles: ${selectedObstacles.join(', ')}. `
+              : '';
+            const freeText = field.value.replace(/^Obstacles: [^.]*\. ?/, '');
+            const combinedValue = obstacleText + freeText;
+
+            // Update field when obstacles change
+            useEffect(() => {
+              field.onChange(combinedValue);
+            }, [selectedObstacles, freeText, field]);
+
+            return (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <div className="space-y-3">
+                    {/* Obstacle buttons */}
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-muted">Tap to add obstacles:</p>
+                      <div className="flex flex-wrap gap-2" role="group" aria-label="Obstacle types">
+                        {OBSTACLE_OPTIONS.map((obstacle) => {
+                          const isSelected = selectedObstacles.includes(obstacle.id);
+                          return (
+                            <button
+                              key={obstacle.id}
+                              type="button"
+                              onClick={() => toggleObstacle(obstacle.id)}
+                              disabled={disabled}
+                              className={cn(
+                                'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-all',
+                                isSelected
+                                  ? 'border-accent bg-accent text-accent-foreground shadow-sm'
+                                  : 'border-border bg-surface text-foreground hover:border-accent/50 hover:bg-accent/5'
+                              )}
+                              aria-pressed={isSelected}
+                            >
+                              {isSelected && <Check className="h-3.5 w-3.5" />}
+                              {obstacle.label}
+                            </button>
+                          );
+                        })}
+                        {/* Custom obstacle input */}
+                        <div className="flex gap-1.5 items-center">
+                          <Input
+                            type="text"
+                            placeholder="Other..."
+                            value={customObstacle}
+                            onChange={(e) => setCustomObstacle(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && addCustomObstacle()}
+                            disabled={disabled}
+                            className="w-36 h-8 text-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={addCustomObstacle}
+                            disabled={disabled || !customObstacle.trim()}
+                            className="inline-flex items-center justify-center rounded-full border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-accent/5"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Selected obstacles summary */}
+                    {selectedObstacles.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 p-2 bg-accent/5 rounded-lg">
+                        {selectedObstacles.map((obstacle) => (
+                          <span
+                            key={obstacle}
+                            className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent"
+                          >
+                            {obstacle}
+                            <button
+                              type="button"
+                              onClick={() => toggleObstacle(obstacle)}
+                              className="hover:text-accent/70"
+                              aria-label={`Remove ${obstacle}`}
+                            >
+                              <Check className="h-3 w-3 rotate-45" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Free-form description textarea */}
+                    <Textarea
+                      placeholder="Describe the spot: vibe, surface details, anything else skaters should know..."
+                      rows={3}
+                      value={freeText}
+                      onChange={(e) => field.onChange(obstacleText + e.target.value)}
+                      disabled={disabled}
+                    />
+                  </div>
+                </FormControl>
+                <FormDescription>
+                  Selected obstacles are added automatically. Add any extra details above.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
 
         {/* Surface & Shelter */}
