@@ -661,4 +661,153 @@ body { overflow-x: clip; }
   .transition-normal-ease { transition-duration: 250ms; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
   .transition-slow { transition-duration: 350ms; transition-timing-function: ease-in-out; }
   .transition-slow-spring { transition-duration: 500ms; transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+  /* Custom hover/active states */
+  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
+  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
+  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
+  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
+  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
+  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
+  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
+  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
+  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
+  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
+  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
+  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
+  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
+  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
+  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
+  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
+
+  /* Transform utilities */
+  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
+  .active\:scale-\[0\.98\]:active { transform: scale(0.98); }
+
+  /* Brightness utilities */
+  .hover\:brightness-105:hover { filter: brightness(1.05); }
+
+  /* Border opacity utilities */
+  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
+  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
+
+  /* Background opacity utilities */
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+
+  /* Background color utilities */
+  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
+  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
+  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+
+  /* Border opacity utilities */
+  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
+  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
+
+  /* Transform utilities */
+  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
+  .active\:scale-\[0\.98\]:active { transform: scale(0.98); }
+
+  /* Brightness utilities */
+  .hover\:brightness-105:hover { filter: brightness(1.05); }
+
+  /* Border opacity utilities */
+  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
+  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
+
+  /* Background opacity utilities */
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+
+  /* Background color utilities */
+  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
+  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
+  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+
+  /* Border opacity utilities */
+  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
+  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
+
+  /* Transform utilities */
+  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
+  .active\:scale-\[0\.98\]:active { transform: scale(0.98); }
+
+  /* Brightness utilities */
+  .hover\:brightness-105:hover { filter: brightness(1.05); }
+
+  /* Border opacity utilities */
+  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
+  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
+
+  /* Background opacity utilities */
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+
+  /* Background color utilities */
+  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
+  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
+  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+
+  /* Border opacity utilities */
+  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
+  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
+
+  /* Transform utilities */
+  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
+  .active\:scale-\[0\.98\]:active { transform: scale(0.98); }
+
+  /* Brightness utilities */
+  .hover\:brightness-105:hover { filter: brightness(1.05); }
+
+  /* Border opacity utilities */
+  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
+  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
+
+  /* Background opacity utilities */
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+
+  /* Background color utilities */
+  .hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated); }
+  .hover\:bg-gray-50:hover { background-color: #f9fafb; }
+  .dark\:hover\:bg-gray-50:hover { background-color: #1f2937; }
+  .hover\:bg-accent\/10:hover { background-color: var(--accent); opacity: 0.1; }
+  .hover\:bg-accent\/5:hover { background-color: var(--accent); opacity: 0.05; }
+
+  /* Border opacity utilities */
+  .hover\:border-accent\/30:hover { border-color: var(--accent); opacity: 0.3; }
+  .hover\:border-accent\/20:hover { border-color: var(--accent); opacity: 0.2; }
+
+  /* Transform utilities */
+  .hover\:-translate-y-0\.5:hover { transform: translateY(-0.5rem); }
+  .active\:scale-\[0\.98\]:active { transform: scale(0.98); }
+
+  /* Brightness utilities */
+  .hover\:brightness-105:hover { filter: brightness(1.05); }
 }
