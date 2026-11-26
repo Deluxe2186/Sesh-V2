@@ -379,23 +379,158 @@ export default function Step1Basics({
           />
         </div>
 
-        {/* Best Time */}
+        {/* Best Time with day/time buttons */}
         <FormField
           control={form.control}
           name="bestTime"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Best time to skate</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="e.g. Weekday evenings after 5pm, weekends early morning"
-                  {...field}
-                  disabled={disabled}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            const [selectedDays, setSelectedDays] = useState<string[]>([]);
+            const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
+
+            const toggleDay = (day: string) => {
+              if (selectedDays.includes(day)) {
+                setSelectedDays(selectedDays.filter((d) => d !== day));
+              } else {
+                setSelectedDays([...selectedDays, day]);
+              }
+            };
+
+            const toggleTime = (time: string) => {
+              if (selectedTimes.includes(time)) {
+                setSelectedTimes(selectedTimes.filter((t) => t !== time));
+              } else {
+                setSelectedTimes([...selectedTimes, time]);
+              }
+            };
+
+            // Build bestTime from selections + free text
+            const daysText = selectedDays.length > 0 ? selectedDays.join(', ') : '';
+            const timesText = selectedTimes.length > 0 ? selectedTimes.join(', ') : '';
+            const combinedParts = [];
+            if (daysText) combinedParts.push(daysText);
+            if (timesText) combinedParts.push(timesText);
+            const combinedValue = combinedParts.join(' - ');
+
+            // Update field when selections change
+            useEffect(() => {
+              field.onChange(combinedValue);
+            }, [selectedDays, selectedTimes, field]);
+
+            return (
+              <FormItem>
+                <FormLabel>Best time to skate</FormLabel>
+                <FormControl>
+                  <div className="space-y-3">
+                    {/* Day buttons */}
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-muted">When:</p>
+                      <div className="flex flex-wrap gap-2" role="group" aria-label="Days">
+                        {['Weekdays', 'Weekends', 'Both'].map((day) => {
+                          const isSelected = selectedDays.includes(day);
+                          return (
+                            <button
+                              key={day}
+                              type="button"
+                              onClick={() => toggleDay(day)}
+                              disabled={disabled}
+                              className={cn(
+                                'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-all',
+                                isSelected
+                                  ? 'border-accent bg-accent text-accent-foreground shadow-sm'
+                                  : 'border-border bg-surface text-foreground hover:border-accent/50 hover:bg-accent/5'
+                              )}
+                              aria-pressed={isSelected}
+                            >
+                              {isSelected && <Check className="h-3.5 w-3.5" />}
+                              {day}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Time of day buttons */}
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-muted">Time of day:</p>
+                      <div className="flex flex-wrap gap-2" role="group" aria-label="Time of day">
+                        {['Morning', 'Noon', 'Night'].map((time) => {
+                          const isSelected = selectedTimes.includes(time);
+                          return (
+                            <button
+                              key={time}
+                              type="button"
+                              onClick={() => toggleTime(time)}
+                              disabled={disabled}
+                              className={cn(
+                                'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-all',
+                                isSelected
+                                  ? 'border-accent bg-accent text-accent-foreground shadow-sm'
+                                  : 'border-border bg-surface text-foreground hover:border-accent/50 hover:bg-accent/5'
+                              )}
+                              aria-pressed={isSelected}
+                            >
+                              {isSelected && <Check className="h-3.5 w-3.5" />}
+                              {time}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Summary */}
+                    {(selectedDays.length > 0 || selectedTimes.length > 0) && (
+                      <div className="flex flex-wrap gap-1.5 p-2 bg-accent/5 rounded-lg">
+                        {selectedDays.map((day) => (
+                          <span
+                            key={day}
+                            className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent"
+                          >
+                            {day}
+                            <button
+                              type="button"
+                              onClick={() => toggleDay(day)}
+                              className="hover:text-accent/70"
+                              aria-label={`Remove ${day}`}
+                            >
+                              <Check className="h-3 w-3 rotate-45" />
+                            </button>
+                          </span>
+                        ))}
+                        {selectedTimes.map((time) => (
+                          <span
+                            key={time}
+                            className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent"
+                          >
+                            {time}
+                            <button
+                              type="button"
+                              onClick={() => toggleTime(time)}
+                              className="hover:text-accent/70"
+                              aria-label={`Remove ${time}`}
+                            >
+                              <Check className="h-3 w-3 rotate-45" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Optional free-form input for additional details */}
+                    <Input
+                      placeholder="Or type custom: e.g. Weekday evenings after 5pm"
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      disabled={disabled}
+                    />
+                  </div>
+                </FormControl>
+                <FormDescription>
+                  Tap buttons above or type custom. Format: Days - Times.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
 
         {/* Security Level & Note */}
