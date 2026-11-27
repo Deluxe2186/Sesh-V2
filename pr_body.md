@@ -1,38 +1,56 @@
 ## Summary
 
-This PR resolves lint warnings and runtime issues while improving map interactions across the explore and heatmap pages.
+This PR establishes the Supabase backend foundation for Sesh-V2, replacing the localStorage-based auth and data layer with a proper PostgreSQL database, Row Level Security, and SSR-compatible auth.
 
 ## Changes
 
-### New Component
-- **`MapLocationControl.tsx`** — Extracted the 'My location' button with geolocation caching, error handling, and a user marker into a reusable component used by both `HeatmapMap` and `SpotMap`.
+### Supabase Clients (SSR-compatible)
+- `src/lib/supabase/client.ts` — Browser client using `@supabase/ssr`
+- `src/lib/supabase/server.ts` — Server Component client using Next.js 13.5 `cookies()` API
+- `src/lib/supabase/middleware.ts` — Middleware client helper for session refresh
 
-### Map Focus Coordination
-- Added `focusRequest` pattern to `HeatmapPage`, `ExploreClient`, `HeatmapMap`, `SpotMap`, and `SpotDetail` to synchronize map focus between ranked spot lists and map markers. Uses an incrementing request counter to trigger fly-to animations reliably.
+### Middleware & Auth
+- `src/middleware.ts` — Refreshes auth session on every request, protects routes:
+  - Protected: `/profile`, `/settings`, `/add-spot`, `/spot/*` → redirect to `/login`
+  - Auth pages: `/login`, `/signup` → redirect to `/explore` if authenticated
+- `src/components/AuthProvider.tsx` — Updated to use Supabase auth:
+  - `signUp` now auto-signs-in after registration (fixes email confirmation redirect issue)
+  - `logIn` / `logOut` / session persistence via `onAuthStateChange`
 
-### Heatmap Improvements
-- Replaced circle-only rendering with **marker-based rendering** in `HeatmapMap` — markers now show live skater counts with distinct selected/hover/live states
-- Added hover highlighting on both circles and markers
-- Fly-to zoom increased to 16 with shorter duration (0.8s) for snappier feel
+### Database Schema (`supabase/migrations/0001_init.sql`)
+Tables mapped to `src/types/index.ts`:
+- `profiles` — Maps to `auth.users`, includes `handle`, `stance`, `level`, `preferred_obstacles`, `share_location`
+- `spots` — Full spot data with `status` enum (`pending_review`/`approved`/`rejected`), `verified`, `approximate_location`
+- `spot_media` — Images/videos with storage paths
+- `security_reports` — User reports on spots
+- `sessions` — Live skate sessions with `ended_at` null for active sessions
 
-### Explore Page Mobile Layout
-- **Removed the map/list tab switch** on mobile — now always shows map + list stacked, matching desktop behavior
-- 'Start a session' button moved to a fixed position above the list
-- List items now use `<button>` with `aria-pressed` for proper selection semantics
+**Views & Functions:**
+- `spot_live_counts` — Live session count per spot
+- `spot_stats(spot_id)` — Returns `weeklyVisits`, `lastActive`, `busyByTime`, `busyByDay` computed from sessions
 
-### Accessibility
-- Spot cards use `<button>` with `aria-pressed` and `focus-visible:ring-2`
-- Map markers have `keyboard: true` and descriptive `title` attributes
-- Legend z-index adjusted to stay above recenter control
+### Row Level Security
+- Anyone reads `approved` spots, live counts, stats
+- Users read/write own profile
+- Users insert spots as `pending_review` only (cannot set `verified` or `status='approved'`)
+- Users insert/update/delete own sessions, reports, media
+- Client can never set `spots.status` or `verified`
 
-### Lint Fixes
-- Fixed exhaustive-deps warnings in `HeatmapMap` and `SpotMap` by stabilizing callbacks with refs
-- All ESLint and TypeScript checks pass
+### Seed Data
+- `supabase/seed.sql` — 8 Lagos spots with security reports (status `approved`, verified as in original seed)
+
+### Documentation
+- `README.md` — Supabase setup instructions, migration/seed commands, project structure
 
 ## Testing
-- `npm run lint` — ✅ No warnings/errors
-- `npm run typecheck` — ✅ No errors
-- `npm run build` — ✅ Compiles successfully
-- Dev server loads without runtime errors
+- `npm run typecheck` ✅
+- `npm run lint` ✅
+- `npm run build` ✅
+
+## Notes
+- All existing function signatures, context APIs, and types in `src/types/index.ts` preserved
+- Offline cache, low-data mode, mobile responsiveness unchanged
+- No service role key used; all access via publishable key + RLS
+- Never commits secrets
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
