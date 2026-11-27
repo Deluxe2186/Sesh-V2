@@ -83,12 +83,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw new Error(error.message);
     if (!data.user) throw new Error('Sign up failed');
 
-    const u: SeshUser = {
-      id: data.user.id,
-      name: input.name.trim(),
-      handle: input.handle.replace(/^@/, '').trim().toLowerCase(),
+    // If email confirmation is required, signUp won't create a session.
+    // Auto sign-in to establish the session immediately.
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
       email: input.email.trim().toLowerCase(),
-      shareLocation: input.shareLocation,
+      password: input.password,
+    });
+
+    if (signInError) throw new Error(signInError.message);
+    if (!signInData.user) throw new Error('Sign in after sign up failed');
+
+    const u: SeshUser = {
+      id: signInData.user.id,
+      name: signInData.user.user_metadata?.name || input.name.trim(),
+      handle: signInData.user.user_metadata?.handle || input.handle.replace(/^@/, '').trim().toLowerCase(),
+      email: signInData.user.email || input.email.trim().toLowerCase(),
+      shareLocation: signInData.user.user_metadata?.shareLocation ?? input.shareLocation,
+      stance: signInData.user.user_metadata?.stance as Stance | undefined,
+      level: signInData.user.user_metadata?.level as Level | undefined,
     };
     setUser(u);
     return u;

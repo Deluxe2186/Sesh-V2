@@ -6,14 +6,19 @@
 -- For development, you can create users via Supabase Auth UI, then run this.
 
 -- =============================================================================
+-- USER UUIDs (from auth.users)
+-- yanmife: 78e41789-b06c-42b6-aa0d-9a70a5018b4a
+-- tunde:   4bdc78ce-1810-4fa2-9e3e-5180edb20c99
+-- chidi:   f3dd57ad-6801-4291-a20b-ffcc66d445d2
+-- =============================================================================
+
+-- =============================================================================
 -- HELPER: Insert spots (status=approved, verified as in seed)
 -- =============================================================================
--- Note: created_by should match an existing profile.id (auth user)
--- For now, we'll insert with a placeholder - update after creating users
 
 insert into spots (id, name, area, lat, lng, obstacles, surface, best_time, notes, how_to_find, shelter, security_level, security_note, tips, verified, approximate_location, status, created_by, created_at, updated_at)
 values
--- Stadium
+-- Stadium (yanmife)
 (
   'national-stadium',
   'Stadium',
@@ -36,11 +41,11 @@ values
   true,
   false,
   'approved',
-  null, -- update with actual user UUID
+  '78e41789-b06c-42b6-aa0d-9a70a5018b4a',
   now() - interval '30 days',
   now() - interval '1 day'
 ),
--- Train station
+-- Train station (tunde)
 (
   'ebute-metta-station',
   'Train station',
@@ -63,11 +68,11 @@ values
   true,
   false,
   'approved',
-  null,
+  '4bdc78ce-1810-4fa2-9e3e-5180edb20c99',
   now() - interval '25 days',
   now() - interval '2 days'
 ),
--- Maryland bridge
+-- Maryland bridge (chidi)
 (
   'maryland-bridge',
   'Maryland bridge',
@@ -90,11 +95,11 @@ values
   false,
   false,
   'approved',
-  null,
+  'f3dd57ad-6801-4291-a20b-ffcc66d445d2',
   now() - interval '20 days',
   now() - interval '3 days'
 ),
--- Waf Skatepark
+-- Waf Skatepark (yanmife)
 (
   'waf-skatepark',
   'Waf Skatepark',
@@ -117,11 +122,11 @@ values
   true,
   false,
   'approved',
-  null,
+  '78e41789-b06c-42b6-aa0d-9a70a5018b4a',
   now() - interval '15 days',
   now() - interval '1 hour'
 ),
--- Church Street
+-- Church Street (tunde)
 (
   'church-street-alapere',
   'Church Street',
@@ -144,11 +149,11 @@ values
   true,
   false,
   'approved',
-  null,
+  '4bdc78ce-1810-4fa2-9e3e-5180edb20c99',
   now() - interval '10 days',
   now() - interval '5 hours'
 ),
--- Ogba spot
+-- Ogba spot (chidi)
 (
   'ogba-spot',
   'Ogba spot',
@@ -171,11 +176,11 @@ values
   false,
   false,
   'approved',
-  null,
+  'f3dd57ad-6801-4291-a20b-ffcc66d445d2',
   now() - interval '8 days',
   now() - interval '12 hours'
 ),
--- Mainland Ramp Lot
+-- Mainland Ramp Lot (yanmife)
 (
   'mainland-ramp-lot',
   'Mainland Ramp Lot',
@@ -198,11 +203,11 @@ values
   true,
   false,
   'approved',
-  null,
+  '78e41789-b06c-42b6-aa0d-9a70a5018b4a',
   now() - interval '5 days',
   now() - interval '30 minutes'
 ),
--- Island Gap Run
+-- Island Gap Run (yanmife)
 (
   'island-gap-run',
   'Island Gap Run',
@@ -225,7 +230,7 @@ values
   false,
   false,
   'approved',
-  null,
+  '78e41789-b06c-42b6-aa0d-9a70a5018b4a',
   now() - interval '2 days',
   now() - interval '2 days'
 )
@@ -251,43 +256,41 @@ on conflict (id) do update set
 -- =============================================================================
 -- SECURITY REPORTS (sample recent reports)
 -- =============================================================================
--- Note: user_id should match existing profile.id
--- These are placeholder - update after creating users
 
 insert into security_reports (spot_id, user_id, type, created_at)
 values
--- Stadium reports
-('national-stadium', null, 'All clear', now() - interval '1 day'),
-('national-stadium', null, 'All clear', now() - interval '5 days'),
-('national-stadium', null, 'All clear', now() - interval '12 days'),
--- Train station reports
-('ebute-metta-station', null, 'Security came by', now() - interval '3 days'),
-('ebute-metta-station', null, 'All clear', now() - interval '8 days'),
-('ebute-metta-station', null, 'Asked to leave', now() - interval '14 days'),
--- Maryland bridge reports
-('maryland-bridge', null, 'All clear', now() - interval '4 days'),
-('maryland-bridge', null, 'Security came by', now() - interval '10 days'),
-('maryland-bridge', null, 'All clear', now() - interval '17 days'),
--- Waf Skatepark reports
-('waf-skatepark', null, 'All clear', now() - interval '1 day'),
-('waf-skatepark', null, 'All clear', now() - interval '3 days'),
-('waf-skatepark', null, 'All clear', now() - interval '7 days'),
--- Church Street reports
-('church-street-alapere', null, 'All clear', now() - interval '2 days'),
-('church-street-alapere', null, 'All clear', now() - interval '6 days'),
-('church-street-alapere', null, 'All clear', now() - interval '13 days'),
--- Ogba spot reports
-('ogba-spot', null, 'Asked to leave', now() - interval '2 days'),
-('ogba-spot', null, 'All clear', now() - interval '7 days'),
-('ogba-spot', null, 'Security came by', now() - interval '11 days'),
--- Mainland Ramp Lot reports
-('mainland-ramp-lot', null, 'All clear', now() - interval '1 day'),
-('mainland-ramp-lot', null, 'All clear', now() - interval '5 days'),
-('mainland-ramp-lot', null, 'All clear', now() - interval '12 days'),
--- Island Gap Run reports
-('island-gap-run', null, 'Asked to leave', now() - interval '2 days'),
-('island-gap-run', null, 'Security came by', now() - interval '6 days'),
-('island-gap-run', null, 'Asked to leave', now() - interval '10 days')
+-- Stadium reports (yanmife)
+('national-stadium', '78e41789-b06c-42b6-aa0d-9a70a5018b4a', 'All clear', now() - interval '1 day'),
+('national-stadium', '78e41789-b06c-42b6-aa0d-9a70a5018b4a', 'All clear', now() - interval '5 days'),
+('national-stadium', '78e41789-b06c-42b6-aa0d-9a70a5018b4a', 'All clear', now() - interval '12 days'),
+-- Train station reports (tunde)
+('ebute-metta-station', '4bdc78ce-1810-4fa2-9e3e-5180edb20c99', 'Security came by', now() - interval '3 days'),
+('ebute-metta-station', '4bdc78ce-1810-4fa2-9e3e-5180edb20c99', 'All clear', now() - interval '8 days'),
+('ebute-metta-station', '4bdc78ce-1810-4fa2-9e3e-5180edb20c99', 'Asked to leave', now() - interval '14 days'),
+-- Maryland bridge reports (chidi)
+('maryland-bridge', 'f3dd57ad-6801-4291-a20b-ffcc66d445d2', 'All clear', now() - interval '4 days'),
+('maryland-bridge', 'f3dd57ad-6801-4291-a20b-ffcc66d445d2', 'Security came by', now() - interval '10 days'),
+('maryland-bridge', 'f3dd57ad-6801-4291-a20b-ffcc66d445d2', 'All clear', now() - interval '17 days'),
+-- Waf Skatepark reports (yanmife)
+('waf-skatepark', '78e41789-b06c-42b6-aa0d-9a70a5018b4a', 'All clear', now() - interval '1 day'),
+('waf-skatepark', '78e41789-b06c-42b6-aa0d-9a70a5018b4a', 'All clear', now() - interval '3 days'),
+('waf-skatepark', '78e41789-b06c-42b6-aa0d-9a70a5018b4a', 'All clear', now() - interval '7 days'),
+-- Church Street reports (tunde)
+('church-street-alapere', '4bdc78ce-1810-4fa2-9e3e-5180edb20c99', 'All clear', now() - interval '2 days'),
+('church-street-alapere', '4bdc78ce-1810-4fa2-9e3e-5180edb20c99', 'All clear', now() - interval '6 days'),
+('church-street-alapere', '4bdc78ce-1810-4fa2-9e3e-5180edb20c99', 'All clear', now() - interval '13 days'),
+-- Ogba spot reports (chidi)
+('ogba-spot', 'f3dd57ad-6801-4291-a20b-ffcc66d445d2', 'Asked to leave', now() - interval '2 days'),
+('ogba-spot', 'f3dd57ad-6801-4291-a20b-ffcc66d445d2', 'All clear', now() - interval '7 days'),
+('ogba-spot', 'f3dd57ad-6801-4291-a20b-ffcc66d445d2', 'Security came by', now() - interval '11 days'),
+-- Mainland Ramp Lot reports (yanmife)
+('mainland-ramp-lot', '78e41789-b06c-42b6-aa0d-9a70a5018b4a', 'All clear', now() - interval '1 day'),
+('mainland-ramp-lot', '78e41789-b06c-42b6-aa0d-9a70a5018b4a', 'All clear', now() - interval '5 days'),
+('mainland-ramp-lot', '78e41789-b06c-42b6-aa0d-9a70a5018b4a', 'All clear', now() - interval '12 days'),
+-- Island Gap Run reports (yanmife)
+('island-gap-run', '78e41789-b06c-42b6-aa0d-9a70a5018b4a', 'Asked to leave', now() - interval '2 days'),
+('island-gap-run', '78e41789-b06c-42b6-aa0d-9a70a5018b4a', 'Security came by', now() - interval '6 days'),
+('island-gap-run', '78e41789-b06c-42b6-aa0d-9a70a5018b4a', 'Asked to leave', now() - interval '10 days')
 on conflict do nothing;
 
 -- =============================================================================
