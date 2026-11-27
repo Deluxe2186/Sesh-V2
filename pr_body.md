@@ -1,49 +1,57 @@
 ## Summary
 
-This PR replaces the seed-backed data layer in `src/lib/api.ts` with Supabase queries, while keeping all existing function signatures and TypeScript types (`Spot`, `Skater`, `User`, `RecentSessionRow`, `SecurityReport`) so the UI continues working unchanged.
+This PR implements real spot submission with Supabase Storage uploads, replacing the localStorage-only `submitSpot()`.
 
 ## Changes
 
-### New Files
-- **`src/lib/api.client.ts`** — Client-side Supabase queries with `'use client'`, browser client, offline cache
-- **`src/lib/api.server.ts`** — Server-side Supabase queries for Server Components (uses `cookies()`)
-- **`src/lib/offlineCache.ts`** — Offline cache utilities: `cacheSpots`, `getCachedSpots`, `getCachedSpotsCount`, `clearOfflineCache`, `subscribeToOnlineStatus`
-- **`src/lib/api.ts`** — Barrel file re-exporting client API only
+### Migration 0002: Storage Bucket & Policies
+- **`supabase/migrations/0002_storage.sql`** — Creates `spot-media` bucket with RLS:
+  - Public read access for approved spots
+  - Users upload only to their own folder (`{user_id}/`)
+  - 30 MB file size limit, `image/*` and `video/*` only
+  - Users can update/delete their own files
 
-### Updated Files
-- **`src/lib/api.client.ts`** — All data fetching functions using Supabase:
-  - `getSpots()` — Approved spots + current user's pending spots, with live counts & stats from `spot_live_counts` view and `spot_stats()` function
-  - `getSpot(id)` — Single spot with full computed stats
-  - `getSkaters()` — From `profiles` table
-  - `getCurrentUser()` — From `profiles` with auth metadata fallback
-  - `getRecentSessions(spotId)` — Real ended sessions from `sessions` table
-  - `reportSecurity(spotId, type)` — Inserts to `security_reports`, rate-limited (1/user/spot/hour)
-  - `getStoredReports(spotId)` — Kept for backward compatibility
-  - Spot submissions (`saveDraft`, `submitSpot`, `getUserSubmissions`, `getDraft`, `deleteDraft`) — Remain localStorage-based for offline support
-- **`src/lib/api.server.ts`** — Server-only versions: `getSpotsServer`, `getSpotServer`
-- **`src/lib/offlineCache.ts`** — Cache last successful spots response (5min TTL), fallback on error/offline, `clearOfflineCache` clears all localStorage keys
+### `submitSpot()` Implementation (`src/lib/api.client.ts`)
+Real submission flow:
+1. **Upload media** — Compressed files uploaded to `spot-media` bucket with `onProgress` callback
+2. **Insert spot_media** — Rows with `kind`, `path`, `size_bytes`, `duration_s`
+3. **Insert spot** — As `'pending_review'` with all spot data
+4. **Atomic cleanup** — On any failure, uploaded files and partial spot are deleted
+5. **Draft preservation** — Draft kept until fully succeeded; only removed on success
 
-### Import Updates
-- Server Components (`/explore/page.tsx`, `/spot/[id]/page.tsx`) → import from `@/lib/api.server`
-- Client Components (`/heatmap/page.tsx`, `/profile/page.tsx`, `SecurityCard`, `RecentSessions`, `AddSpotWizard`, `MySubmissions`) → import from `@/lib/api.client`
+**Options:**
+```typescript
+submitSpot(submission, {
+  onProgress: (progress[]) => { /* update UI */ },
+  onError: (message, failedFile?) => { /* show retry */ }
+})
+```
 
-### Removed
-- `src/data/seed.ts` no longer imported by app code (kept for reference/seeding)
+### `getUserSubmissions()` — Merged Sources
+Merges three sources, deduplicated by ID:
+1. **Server submissions** — `pending_review`, `approved`, `rejected` from `spots` + `spot_media`
+2. **Local submissions** — Previously submitted via `submitSpot()`
+3. **Local drafts** — `saveDraft()` / `ready_to_send`
+
+New function: `fetchUserSubmissionsFromServer()` — Returns full SpotSubmission objects with public media URLs.
+
+### Add Spot Wizard Integration
+The existing `AddSpotWizard` already calls `submitSpot()` — just needs to pass `onProgress` and `onError` callbacks to show upload progress and retry on failure.
 
 ## Testing
 - `npm run typecheck` ✅
 - `npm run lint` ✅
 - `npm run build` ✅
 
-## Supabase Requirements
-- Run `supabase/migrations/0001_init.sql` (creates tables, RLS, `spot_live_counts` view, `spot_stats()` function)
-- Run `supabase/seed.sql` (8 Lagos spots, status=approved)
-- Ensure `spot_live_counts` view and `spot_stats(text)` function exist
+## Supabase Setup Required
+1. Run `supabase/migrations/0002_storage.sql` in SQL Editor
+2. This creates the `spot-media` bucket with policies
 
-## Notes
-- All existing function signatures, context APIs, and types in `src/types/index.ts` preserved
-- Offline cache: last successful response cached for 5min, auto-fallback on network error
-- Low-data mode, mobile responsiveness unchanged
-- No service role key used; all access via publishable key + RLS
+## Approving Spots (Manual Process)
+To approve a spot submission:
+1. Go to **Supabase Dashboard → Table Editor → spots**
+2. Filter by `status = 'pending_review'`
+3. Edit the row → change `status` to `'approved'` (or `'rejected'`)
+4. The spot immediately appears on `/explore`, `/heatmap`, `/spot/[id]`
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
