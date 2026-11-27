@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { getUserSubmissions, submitSpot, deleteDraft, getDraft } from '@/lib/api';
+import { getUserSubmissions, submitSpot, deleteDraft, getDraft } from '@/lib/api.client';
 import { useAuth } from '@/components/AuthProvider';
 import { SpotSubmission, SubmissionStatus } from '@/types';
 import { toast } from 'sonner';

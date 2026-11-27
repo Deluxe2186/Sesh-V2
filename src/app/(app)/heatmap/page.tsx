@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MapPin, Sunrise, Sun, Sunset, Moon, Calendar } from 'lucide-react';
-import { getSpots } from '@/lib/api';
+import { getSpots } from '@/lib/api.client';
 import type { Spot, BusyByTime } from '@/types';
 import {
   Card,

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import SpotDetail from '@/components/spot/SpotDetail';
-import { getSpot } from '@/lib/api';
+import { getSpotServer as getSpot } from '@/lib/api.server';
 
 export async function generateMetadata({
   params,

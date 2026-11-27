@@ -3,7 +3,7 @@
 import { Shield, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCallback, useEffect, useState } from 'react';
-import { getStoredReports, reportSecurity } from '@/lib/api';
+import { getStoredReports, reportSecurity } from '@/lib/api.client';
 import { relativeTime } from '@/lib/time';
 import type { SecurityReport, SecurityReportType, Spot } from '@/types';
 

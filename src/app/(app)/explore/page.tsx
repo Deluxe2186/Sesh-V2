@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getSpots } from '@/lib/api';
+import { getSpotsServer as getSpots } from '@/lib/api.server';
 import ExploreClient from '@/components/ExploreClient';
 
 export const metadata: Metadata = {

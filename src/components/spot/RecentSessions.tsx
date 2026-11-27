@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getRecentSessions, type RecentSessionRow } from '@/lib/api';
+import { getRecentSessions, type RecentSessionRow } from '@/lib/api.client';
 import { relativeTime } from '@/lib/time';
 
 export default function RecentSessions({ spotId }: { spotId: string }) {
