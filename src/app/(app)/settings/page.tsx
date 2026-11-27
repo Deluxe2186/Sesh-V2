@@ -434,7 +434,7 @@ export default function SettingsPage() {
             <div className="rounded-lg bg-accent/10 border border-accent/20 p-4 space-y-2 stagger-2 animate-fade-in-up">
               <p className="text-sm font-medium text-accent">Low data mode is active</p>
               <ul className="text-sm text-muted space-y-1 pl-4 list-disc animate-stagger-fade-in">
-                <li className="stagger-1 animate-fade-in-up">Weather shows "Load weather" button instead of auto-fetching</li>
+                <li className="stagger-1 animate-fade-in-up">Weather shows &quot;Load weather&quot; button instead of auto-fetching</li>
                 <li className="stagger-2 animate-fade-in-up">Video previews disabled (shows poster + file size)</li>
                 <li className="stagger-3 animate-fade-in-up">Map animations and transitions disabled</li>
                 <li className="stagger-4 animate-fade-in-up">Images lazy-loaded at lowest available resolution</li>

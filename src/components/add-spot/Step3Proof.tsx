@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Camera, Video, X, Loader2, Check, AlertCircle, Image } from 'lucide-react';
+import Image from 'next/image';
+import { Camera, Video, X, Loader2, Check, AlertCircle, Image as ImageIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -290,9 +291,12 @@ export default function Step3Proof({
                 {/* Thumbnail */}
                 <div className="aspect-square rounded-[8px] overflow-hidden bg-secondary">
                   {file.thumbnail ? (
-                    <img
+                    <Image
                       src={file.thumbnail}
-                      alt={file.name}
+                      alt={file.name || 'Uploaded proof'}
+                      width={320}
+                      height={320}
+                      unoptimized
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -300,7 +304,7 @@ export default function Step3Proof({
                       {file.type === 'video' ? (
                         <Video className="h-8 w-8 text-muted" />
                       ) : (
-                        <Image className="h-8 w-8 text-muted" />
+                        <ImageIcon className="h-8 w-8 text-muted" />
                       )}
                     </div>
                   )}

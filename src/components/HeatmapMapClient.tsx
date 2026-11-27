@@ -17,6 +17,7 @@ export default function HeatmapMapClient(props: {
   timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night';
   isWeekend: boolean;
   selectedSpotId: string | null;
+  focusRequest?: { id: string; request: number } | null;
   onSpotClick: (id: string) => void;
   height?: string;
 }) {

@@ -1,7 +1,9 @@
 'use client';
 
 import { Compass, Flame, Plus, Settings, User } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 const TABS = [
@@ -14,11 +16,16 @@ const TABS = [
 
 export default function MobileTabBar() {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
 
-  return (
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
+
+  return createPortal(
     <nav
       aria-label="Main"
-      className="fixed inset-x-0 bottom-0 z-[60] border-t bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-[70] border-t bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden"
     >
       <ul className="mx-auto flex max-w-xl items-stretch justify-around">
         {TABS.map((tab) => {
@@ -44,6 +51,7 @@ export default function MobileTabBar() {
           );
         })}
       </ul>
-    </nav>
+    </nav>,
+    document.body
   );
 }

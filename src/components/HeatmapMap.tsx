@@ -3,10 +3,12 @@
 import 'leaflet/dist/leaflet.css';
 
 import L from 'leaflet';
-import { useEffect, useRef, useMemo } from 'react';
+import { useCallback, useEffect, useRef, useMemo, useState } from 'react';
+import MapLocationControl from '@/components/MapLocationControl';
 import type { Spot, BusyByTime } from '@/types';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/lib/settings';
+import { useSessions } from '@/lib/sessions';
 
 const LAGOS_CENTER: [number, number] = [6.5244, 3.3792];
 
@@ -15,6 +17,7 @@ interface HeatmapMapProps {
   timeOfDay: keyof BusyByTime;
   isWeekend: boolean;
   selectedSpotId: string | null;
+  focusRequest?: { id: string; request: number } | null;
   onSpotClick: (id: string) => void;
   height?: string;
 }
@@ -24,13 +27,19 @@ export default function HeatmapMap({
   timeOfDay,
   isWeekend,
   selectedSpotId,
+  focusRequest = null,
   onSpotClick,
   height = '100%',
 }: HeatmapMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const circlesRef = useRef<Record<string, L.Circle>>({});
+  const markersRef = useRef<Record<string, L.Marker>>({});
+  const onSpotClickRef = useRef(onSpotClick);
+  const [mapReady, setMapReady] = useState(false);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const { settings } = useSettings();
+  const { sessions } = useSessions();
   const lowDataMode = settings.lowDataMode;
 
   // Calculate circle radius and opacity based on weeklyVisits
@@ -38,26 +47,45 @@ export default function HeatmapMap({
     Math.max(...spots.map(s => s.weeklyVisits), 1), [spots]);
 
   // Color scale: soft yellow (quiet) to deep orange (busiest)
-  const getColor = (visits: number) => {
+  const getColor = useCallback((visits: number) => {
     const ratio = visits / maxWeeklyVisits;
     // Interpolate from soft yellow to deep orange
     const r = Math.round(255);
     const g = Math.round(255 * (1 - ratio * 0.6));
     const b = Math.round(0);
     return `rgb(${r}, ${g}, ${b})`;
-  };
+  }, [maxWeeklyVisits]);
 
-  const getRadius = (visits: number) => {
+  const getRadius = useCallback((visits: number) => {
     const ratio = visits / maxWeeklyVisits;
     // Radius between 150m and 1500m
     return 150 + ratio * 1350;
-  };
+  }, [maxWeeklyVisits]);
 
-  const getOpacity = (visits: number) => {
+  const getOpacity = useCallback((visits: number) => {
     const ratio = visits / maxWeeklyVisits;
     // Opacity between 0.15 and 0.6
     return 0.15 + ratio * 0.45;
-  };
+  }, [maxWeeklyVisits]);
+
+  const buildMarkerIcon = useCallback((spot: Spot, isSelected: boolean, isHovered: boolean) => {
+    const liveCount = sessions[spot.id]?.members.length ?? 0;
+    const isLive = liveCount > 0;
+    const size = isSelected ? 36 : isHovered ? 34 : 26;
+    const background = isSelected ? '#FF5A1F' : isLive ? '#FFFFFF' : '#9A9AA2';
+    const color = isSelected || !isLive ? '#FFFFFF' : '#FF5A1F';
+    const border = isHovered ? '3px solid #FF5A1F' : '2px solid #FFFFFF';
+    return L.divIcon({
+      className: 'sesh-marker',
+      html: `<span style="display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;border-radius:50%;font-weight:700;line-height:1;width:${size}px;height:${size}px;background:${background};color:${color};border:${border};box-shadow:0 1px 3px rgba(0,0,0,0.25);">${liveCount}</span>`,
+      iconSize: [size, size],
+      iconAnchor: [size / 2, size / 2],
+    });
+  }, [sessions]);
+
+  useEffect(() => {
+    onSpotClickRef.current = onSpotClick;
+  }, [onSpotClick]);
 
   // Initialize map
   useEffect(() => {
@@ -76,11 +104,13 @@ export default function HeatmapMap({
     }).addTo(map);
 
     mapRef.current = map;
+    setMapReady(true);
 
     return () => {
       map.remove();
       mapRef.current = null;
       circlesRef.current = {};
+      markersRef.current = {};
     };
   }, []);
 
@@ -94,6 +124,8 @@ export default function HeatmapMap({
       if (!spots.some((s) => s.id === id)) {
         circlesRef.current[id].remove();
         delete circlesRef.current[id];
+        markersRef.current[id]?.remove();
+        delete markersRef.current[id];
       }
     });
 
@@ -131,13 +163,15 @@ export default function HeatmapMap({
           className: 'heatmap-circle',
         }).addTo(map);
 
-        circle.on('click', () => onSpotClick(spot.id));
+        circle.on('click', () => onSpotClickRef.current(spot.id));
 
         // Add hover effect
         circle.on('mouseover', () => {
+          setHoveredId(spot.id);
           circle.setStyle({ weight: 3, opacity: 0.9 });
         });
         circle.on('mouseout', () => {
+          setHoveredId((current) => current === spot.id ? null : current);
           circle.setStyle({
             weight: spot.id === selectedSpotId ? 3 : 1,
             opacity: spot.id === selectedSpotId ? 0.9 : 0.6
@@ -152,35 +186,53 @@ export default function HeatmapMap({
         circlesRef.current[spot.id].setStyle({
           fillColor: color,
           fillOpacity: opacity,
-          weight: isSelected ? 3 : 1,
-          opacity: isSelected ? 0.9 : 0.6,
+          weight: isSelected || hoveredId === spot.id ? 3 : 1,
+          opacity: isSelected || hoveredId === spot.id ? 0.9 : 0.6,
         });
       }
-    });
-  }, [spots, timeOfDay, isWeekend, selectedSpotId, onSpotClick]);
 
-  // Fly to spot when selectedSpotId changes
+      const liveCount = sessions[spot.id]?.members.length ?? 0;
+      const marker = markersRef.current[spot.id];
+      if (marker) {
+        marker.setLatLng([spot.lat, spot.lng]);
+        marker.setIcon(buildMarkerIcon(spot, isSelected, hoveredId === spot.id));
+      } else {
+        const newMarker = L.marker([spot.lat, spot.lng], {
+          icon: buildMarkerIcon(spot, isSelected, hoveredId === spot.id),
+          keyboard: true,
+          title: `${spot.name}: ${liveCount} skating now`,
+          zIndexOffset: isSelected ? 500 : 0,
+        }).addTo(map);
+        newMarker.on('click', () => onSpotClickRef.current(spot.id));
+        newMarker.on('mouseover', () => setHoveredId(spot.id));
+        newMarker.on('mouseout', () => setHoveredId((current) => current === spot.id ? null : current));
+        markersRef.current[spot.id] = newMarker;
+      }
+    });
+  }, [spots, timeOfDay, isWeekend, selectedSpotId, sessions, hoveredId, mapReady, onSpotClick, getColor, getRadius, getOpacity, buildMarkerIcon]);
+
+  // Focus spot selections from either the map or the ranked list.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !selectedSpotId) return;
+    const selectedId = focusRequest?.id ?? selectedSpotId;
+    if (!map || !selectedId) return;
 
-    const spot = spots.find((s) => s.id === selectedSpotId);
+    const spot = spots.find((candidate) => candidate.id === selectedId);
     if (spot) {
-      map.flyTo([spot.lat, spot.lng], 14, {
-        animate: true,
-        duration: 1.5,
-      });
+      map.flyTo([spot.lat, spot.lng], 16, { animate: true, duration: 0.8 });
     }
-  }, [selectedSpotId, spots]);
+  }, [focusRequest, selectedSpotId, spots, mapReady]);
 
   return (
     <div
-      ref={containerRef}
       style={{ height, width: '100%' }}
       className={cn(
-        'overflow-hidden rounded-[12px] border',
+        'relative z-0 isolate overflow-hidden rounded-[12px] border',
         lowDataMode && 'heatmap-low-data'
       )}
-    />
+    >
+      <div ref={containerRef} className="h-full w-full" />
+      <MapLocationControl map={mapRef.current} />
+    </div>
   );
 }

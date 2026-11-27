@@ -70,65 +70,81 @@ function FilterPill({ pill, active, onClick }: { pill: typeof FILTER_PILLS[0]; a
   );
 }
 
-function SpotCard({ spot, liveCount, isHighlighted, onClick }: {
+function SpotCard({ spot, liveCount, isHighlighted, isSelected, onClick }: {
   spot: Spot;
   liveCount: number;
   isHighlighted: boolean;
+  isSelected: boolean;
   onClick: () => void;
 }) {
   return (
-    <Link
-      href={`/spot/${spot.id}`}
-      onClick={onClick}
-      className={`block rounded-[12px] border bg-surface p-3 transition-all duration-normal ease-out card-hover hover-lift press-scale ${
+    <article
+      className={`rounded-[12px] border bg-surface p-3 transition-all duration-normal ease-out card-hover hover-lift ${
         isHighlighted ? 'border-accent ring-1 ring-accent shadow-md' : ''
       }`}
     >
-      <div className="flex gap-3">
-        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[8px] transition-transform duration-normal group-hover:scale-[1.02]">
-          <PhotoPlaceholder label="" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <h2 className="truncate font-semibold font-display transition-colors duration-fast group-hover:text-accent">
-              {spot.name}
-            </h2>
-            {spot.verified && (
-              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent transition-all duration-fast group-hover:bg-accent/20">
-                <Check className="h-3 w-3" />
-                Verified
-              </span>
-            )}
+      <button
+        type="button"
+        onClick={onClick}
+        aria-pressed={isSelected}
+        aria-label={`Show ${spot.name} on map`}
+        className="block w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 rounded-[8px]"
+      >
+        <div className="flex gap-3">
+          <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[8px] transition-transform duration-normal group-hover:scale-[1.02]">
+            <PhotoPlaceholder label="" />
           </div>
-          <p className="mt-0.5 flex items-center gap-1 text-sm text-muted">
-            <MapPin className="h-3 w-3 flex-shrink-0" />
-            {spot.area}
-          </p>
-          <div className="mt-2 flex flex-wrap gap-1">
-            {spot.obstacles.map((o) => (
-              <span
-                key={o}
-                className="rounded-full border px-2 py-0.5 text-[11px] text-muted transition-all duration-fast group-hover:border-accent/50 group-hover:text-accent"
-              >
-                {o}
-              </span>
-            ))}
-          </div>
-          <div className="mt-2 flex items-center gap-1.5 text-xs">
-            {liveCount > 0 ? (
-              <>
-                <span className="h-2 w-2 rounded-full bg-[var(--live)] animate-pulse" />
-                <span className="font-semibold text-[var(--live)]">
-                  {liveCount} skating now
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-2">
+              <h2 className="truncate font-semibold font-display transition-colors duration-fast group-hover:text-accent">
+                {spot.name}
+              </h2>
+              {spot.verified && (
+                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent transition-all duration-fast group-hover:bg-accent/20">
+                  <Check className="h-3 w-3" />
+                  Verified
                 </span>
-              </>
-            ) : (
-              <span className="text-muted">No one yet</span>
-            )}
+              )}
+            </div>
+            <p className="mt-0.5 flex items-center gap-1 text-sm text-muted">
+              <MapPin className="h-3 w-3 flex-shrink-0" />
+              {spot.area}
+            </p>
+            <div className="mt-2 flex flex-wrap gap-1">
+              {spot.obstacles.map((o) => (
+                <span
+                  key={o}
+                  className="rounded-full border px-2 py-0.5 text-[11px] text-muted transition-all duration-fast group-hover:border-accent/50 group-hover:text-accent"
+                >
+                  {o}
+                </span>
+              ))}
+            </div>
+            <div className="mt-2 flex items-center gap-1.5 text-xs">
+              {liveCount > 0 ? (
+                <>
+                  <span className="h-2 w-2 rounded-full bg-[var(--live)] animate-pulse" />
+                  <span className="font-semibold text-[var(--live)]">
+                    {liveCount} skating now
+                  </span>
+                </>
+              ) : (
+                <span className="text-muted">No one yet</span>
+              )}
+            </div>
           </div>
         </div>
+      </button>
+      <div className="mt-2 flex justify-end">
+        <Link
+          href={`/spot/${spot.id}`}
+          prefetch={false}
+          className="rounded-full px-3 py-1.5 text-xs font-semibold text-accent hover:bg-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        >
+          View spot
+        </Link>
       </div>
-    </Link>
+    </article>
   );
 }
 
@@ -142,13 +158,12 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
     () => new Set<FilterId>(['all'])
   );
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [focusRequest, setFocusRequest] = useState<{ id: string; request: number } | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [bannerOpen, setBannerOpen] = useState(true);
   const [sessionOpen, setSessionOpen] = useState(false);
   const [sessionSpot, setSessionSpot] = useState<string>(spots[0]?.id ?? '');
   const [starting, setStarting] = useState(false);
-  // Phones show the map or the list, not both
-  const [view, setView] = useState<'map' | 'list'>('map');
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 350);
@@ -202,6 +217,14 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
     [filtered, sessions]
   );
 
+  function focusSpot(id: string) {
+    setSelectedId(id);
+    setFocusRequest((current) => ({
+      id,
+      request: (current?.request ?? 0) + 1,
+    }));
+  }
+
   function handleStartSession() {
     if (!sessionSpot) return;
     if (settings.ghostMode) {
@@ -224,51 +247,24 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
   }
 
   return (
-    <div className="relative flex h-[calc(100dvh-11rem-env(safe-area-inset-bottom))] flex-col gap-3 lg:h-[calc(100dvh-64px)] lg:flex-row lg:gap-6 overflow-hidden animate-fade-in-up">
-      {/* Map | List switch (phones only) */}
-      <div
-        role="tablist"
-        aria-label="Spots view"
-        className="grid shrink-0 grid-cols-2 rounded-full border bg-surface p-1 lg:hidden animate-fade-in-up"
-      >
-        {(['map', 'list'] as const).map((v) => (
-          <button
-            key={v}
-            type="button"
-            role="tab"
-            aria-selected={view === v}
-            onClick={() => setView(v)}
-            className={`min-h-[44px] rounded-full text-sm font-semibold transition-all duration-fast ease-out press-scale ${
-              view === v
-                ? "bg-accent text-accent-foreground shadow-sm"
-                : "text-muted hover:text-foreground hover:bg-surface-elevated"
-            }`}
-          >
-            {v === 'map' ? "Map" : "List"}
-          </button>
-        ))}
-      </div>
-
-      {/* Start a session button - above map on mobile, above left panel on desktop */}
-      <div className="flex justify-end lg:justify-between gap-3 shrink-0 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-        <button
-          type="button"
-          onClick={() => setSessionOpen(true)}
-          className="inline-flex min-h-[48px] items-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-lg hover-lift press-scale transition-all duration-fast"
-          aria-label="Start a skate session"
-        >
-          <Zap className="h-4 w-4 transition-transform group-hover:rotate-12" />
-          Start a session
-        </button>
-      </div>
-
-      {/* Left panel */}
+    <div className="relative flex min-h-0 flex-1 flex-col gap-3 overflow-hidden animate-fade-in-up">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 lg:flex-row lg:gap-6">
+      {/* Spot list: stacked below the map on phones, beside it on desktop. */}
       <aside
-        className={`min-h-0 w-full flex-1 flex-col gap-4 overflow-y-auto pr-1 lg:flex lg:w-[380px] lg:flex-none lg:shrink-0 animate-fade-in-right ${
-          view === 'list' ? "flex" : "hidden"
-        }`}
+        className="order-2 min-h-0 w-full flex flex-[3_1_0%] flex-col gap-3 overflow-y-auto pr-1 pb-2 lg:order-none lg:w-[380px] lg:flex-none lg:shrink-0 animate-fade-in-right"
         style={{ animationDelay: '150ms' }}
       >
+        <div className="flex shrink-0 justify-end lg:hidden">
+          <button
+            type="button"
+            onClick={() => setSessionOpen(true)}
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-lg hover-lift press-scale transition-all duration-fast"
+            aria-label="Start a skate session"
+          >
+            <Zap className="h-4 w-4" />
+            Start a session
+          </button>
+        </div>
         <div className="flex-shrink-0 animate-fade-in-up">
           <h1 className="text-2xl font-bold font-display">Spots near you</h1>
           <p className="mt-1 text-sm text-muted">Sorted by live activity</p>
@@ -285,7 +281,7 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
           ))}
         </div>
 
-        <div className="flex flex-col gap-3 min-h-0 overflow-y-auto pr-1 pb-4 animate-stagger-fade-in">
+        <div className="flex flex-col gap-3 pb-4 animate-stagger-fade-in">
           {loading ? (
             Array.from({ length: 4 }).map((_, i) => <CardSkeleton key={i} index={i} />)
           ) : filtered.length === 0 ? (
@@ -312,7 +308,8 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
                   spot={spot}
                   liveCount={liveCount}
                   isHighlighted={isHighlighted}
-                  onClick={() => setSelectedId(spot.id)}
+                  isSelected={selectedId === spot.id}
+                  onClick={() => focusSpot(spot.id)}
                 />
               );
             })
@@ -339,27 +336,38 @@ export default function ExploreClient({ spots }: { spots: Spot[] }) {
         )}
       </aside>
 
-      {/* Map */}
-      <div
-        className={`relative min-h-0 flex-1 lg:flex-1 lg:block overflow-hidden animate-fade-in-up ${
-          view === 'map' ? "block" : "hidden"
-        }`}
-        style={{ animationDelay: '100ms' }}
+      {/* Map column: desktop session action sits directly above the map. */}
+      <section
+        className="relative order-1 min-h-0 min-w-0 flex flex-[5_1_0%] flex-col gap-2 lg:order-none lg:flex-1 lg:gap-3"
       >
-        <SpotMapClient
-          spots={mapSpots}
-          selectedId={selectedId}
-          hoveredId={hoveredId}
-          onSelect={(id) => setSelectedId(id)}
-          onHover={setHoveredId}
-          onView={(id) => router.push(`/spot/${id}`)}
-          height="100%"
-        />
-
+        <div className="hidden shrink-0 justify-end lg:flex animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+          <button
+            type="button"
+            onClick={() => setSessionOpen(true)}
+            className="inline-flex min-h-[48px] items-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground shadow-lg hover-lift press-scale transition-all duration-fast"
+            aria-label="Start a skate session"
+          >
+            <Zap className="h-4 w-4 transition-transform group-hover:rotate-12" />
+            Start a session
+          </button>
+        </div>
+        <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+          <SpotMapClient
+            spots={mapSpots}
+            selectedId={selectedId}
+            focusRequest={focusRequest}
+            hoveredId={hoveredId}
+            onSelect={focusSpot}
+            onHover={setHoveredId}
+            onView={(id) => router.push(`/spot/${id}`)}
+            height="100%"
+          />
+        </div>
+      </section>
       </div>
 
       <Dialog open={sessionOpen} onOpenChange={setSessionOpen}>
-        <DialogContent className="sm:max-w-md animate-scale-in">
+        <DialogContent className="w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Are you at a skate spot?</DialogTitle>
             <DialogDescription>

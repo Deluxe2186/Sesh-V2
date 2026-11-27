@@ -81,15 +81,7 @@ export default function AddSpotWizard() {
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [draftId, setDraftId] = useState<string | null>(null);
 
-  // Load draft if draft ID in URL
-  useEffect(() => {
-    const draftIdFromUrl = searchParams.get('draft');
-    if (draftIdFromUrl && user) {
-      loadDraft(draftIdFromUrl);
-    }
-  }, [searchParams, user]);
-
-  const loadDraft = async (id: string) => {
+  const loadDraft = useCallback(async (id: string) => {
     try {
       const draft = await getDraft(id);
       if (draft && draft.userId === user?.id) {
@@ -111,7 +103,15 @@ export default function AddSpotWizard() {
       console.error('Failed to load draft:', error);
       toast.error('Failed to load draft');
     }
-  };
+  }, [user]);
+
+  // Load draft if draft ID in URL
+  useEffect(() => {
+    const draftIdFromUrl = searchParams.get('draft');
+    if (draftIdFromUrl && user) {
+      void loadDraft(draftIdFromUrl);
+    }
+  }, [loadDraft, searchParams, user]);
 
   const updateFormData = useCallback((partial: Partial<FormData>) => {
     setFormData((prev) => ({

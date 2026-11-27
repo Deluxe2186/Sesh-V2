@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const areas = [
@@ -95,6 +95,31 @@ export default function Step1Basics({
     defaultValues: formData,
     mode: 'onChange',
   });
+  const [selectedObstacles, setSelectedObstacles] = useState<string[]>([]);
+  const [customObstacle, setCustomObstacle] = useState('');
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
+  const descriptionValue = useWatch({ control: form.control, name: 'description' }) ?? '';
+  useEffect(() => {
+    const obstacleText = selectedObstacles.length
+      ? `Obstacles: ${selectedObstacles.join(', ')}. `
+      : '';
+    const freeText = descriptionValue.replace(/^Obstacles: [^.]*\. ?/, '');
+    const nextDescription = obstacleText + freeText;
+    if (descriptionValue !== nextDescription) {
+      form.setValue('description', nextDescription, { shouldValidate: true });
+    }
+  }, [selectedObstacles, descriptionValue, form]);
+
+  useEffect(() => {
+    const parts = [
+      selectedDays.join(', '),
+      selectedTimes.join(', '),
+    ].filter(Boolean);
+    if (selectedDays.length || selectedTimes.length) {
+      form.setValue('bestTime', parts.join(' - '), { shouldValidate: true });
+    }
+  }, [selectedDays, selectedTimes, form]);
 
   // Sync form changes to parent
   useEffect(() => {
@@ -194,9 +219,6 @@ export default function Step1Basics({
           control={form.control}
           name="description"
           render={({ field }) => {
-            const [selectedObstacles, setSelectedObstacles] = useState<string[]>([]);
-            const [customObstacle, setCustomObstacle] = useState('');
-
             const toggleObstacle = (obstacle: string) => {
               if (selectedObstacles.includes(obstacle)) {
                 setSelectedObstacles(selectedObstacles.filter((o) => o !== obstacle));
@@ -217,13 +239,6 @@ export default function Step1Basics({
               ? `Obstacles: ${selectedObstacles.join(', ')}. `
               : '';
             const freeText = field.value.replace(/^Obstacles: [^.]*\. ?/, '');
-            const combinedValue = obstacleText + freeText;
-
-            // Update field when obstacles change
-            useEffect(() => {
-              field.onChange(combinedValue);
-            }, [selectedObstacles, freeText, field]);
-
             return (
               <FormItem>
                 <FormLabel className="text-foreground font-bold">Description</FormLabel>
@@ -384,9 +399,6 @@ export default function Step1Basics({
           control={form.control}
           name="bestTime"
           render={({ field }) => {
-            const [selectedDays, setSelectedDays] = useState<string[]>([]);
-            const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
-
             const toggleDay = (day: string) => {
               if (selectedDays.includes(day)) {
                 setSelectedDays(selectedDays.filter((d) => d !== day));
@@ -406,16 +418,6 @@ export default function Step1Basics({
             // Build bestTime from selections + free text
             const daysText = selectedDays.length > 0 ? selectedDays.join(', ') : '';
             const timesText = selectedTimes.length > 0 ? selectedTimes.join(', ') : '';
-            const combinedParts = [];
-            if (daysText) combinedParts.push(daysText);
-            if (timesText) combinedParts.push(timesText);
-            const combinedValue = combinedParts.join(' - ');
-
-            // Update field when selections change
-            useEffect(() => {
-              field.onChange(combinedValue);
-            }, [selectedDays, selectedTimes, field]);
-
             return (
               <FormItem>
                 <FormLabel className="text-foreground font-bold">Best time to skate</FormLabel>

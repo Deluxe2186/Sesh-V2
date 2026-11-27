@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Clock, CheckCircle, FileText, Send, Trash2, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -47,13 +47,7 @@ export default function MySubmissions({ className }: MySubmissionsProps) {
   const [submittingId, setSubmittingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      loadSubmissions();
-    }
-  }, [user]);
-
-  const loadSubmissions = async () => {
+  const loadSubmissions = useCallback(async () => {
     if (!user) return;
     try {
       const data = await getUserSubmissions(user.id);
@@ -64,7 +58,13 @@ export default function MySubmissions({ className }: MySubmissionsProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      void loadSubmissions();
+    }
+  }, [loadSubmissions, user]);
 
   const handleSendNow = async (submission: SpotSubmission) => {
     setSubmittingId(submission.id);
