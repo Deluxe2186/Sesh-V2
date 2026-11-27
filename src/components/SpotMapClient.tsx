@@ -15,6 +15,7 @@ const SpotMap = dynamic(() => import('@/components/SpotMap'), {
 export default function SpotMapClient(props: {
   spots: Spot[];
   selectedId?: string | null;
+  focusRequest?: { id: string; request: number } | null;
   hoveredId?: string | null;
   onSelect?: (id: string) => void;
   onHover?: (id: string | null) => void;

@@ -29,6 +29,12 @@ export default function HeatmapPage() {
   const [timeOfDay, setTimeOfDay] = useState<keyof BusyByTime>('evening');
   const [isWeekend, setIsWeekend] = useState(false);
   const [selectedSpotId, setSelectedSpotId] = useState<string | null>(null);
+  const [focusRequest, setFocusRequest] = useState<{ id: string; request: number } | null>(null);
+
+  function focusSpot(id: string) {
+    setSelectedSpotId(id);
+    setFocusRequest((current) => ({ id, request: (current?.request ?? 0) + 1 }));
+  }
 
   // Load spots after mount; never update React state during render.
   const loadSpots = useCallback(async () => {
@@ -138,7 +144,7 @@ export default function HeatmapPage() {
             type="single"
             value={timeOfDay}
             onValueChange={(value) => setTimeOfDay(value as keyof BusyByTime)}
-            className="flex gap-2"
+            className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap"
           >
             {TIME_OF_DAY_OPTIONS.map((option) => (
               <ToggleGroupItem
@@ -186,20 +192,21 @@ export default function HeatmapPage() {
       </div>
 
       {/* Map and Top Spots */}
-      <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-6">
+      <div className="min-w-0 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,280px)] lg:gap-6">
         {/* Map */}
-        <div className="h-[500px] lg:h-[600px] rounded-[12px] border overflow-hidden relative">
+        <div className="relative h-[500px] overflow-hidden rounded-[12px] border lg:h-[600px]">
           <HeatmapMapClient
             spots={spots}
             timeOfDay={timeOfDay}
             isWeekend={isWeekend}
             selectedSpotId={selectedSpotId}
-            onSpotClick={setSelectedSpotId}
+            focusRequest={focusRequest}
+            onSpotClick={focusSpot}
             height="100%"
           />
 
-          {/* Legend at bottom-left */}
-          <div className="absolute bottom-4 left-4 z-10 rounded-lg bg-background/95 backdrop-blur p-3 shadow-lg border">
+          {/* Keep the legend opposite the recenter control. */}
+          <div className="absolute bottom-4 left-4 z-20 rounded-lg border bg-background/95 p-3 shadow-lg backdrop-blur">
             <p className="text-xs font-medium mb-2">Activity Level</p>
             <div className="flex items-center gap-2">
               <div className="h-4 w-20 rounded bg-gradient-to-r from-yellow-300 via-orange-300 to-orange-600" />
@@ -213,27 +220,27 @@ export default function HeatmapPage() {
 
         {/* Top Spots This Week */}
         <div className="space-y-4">
-          <Card className="rounded-[12px]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-accent" />
-                Top spots this week
+          <Card className="min-w-0 rounded-[12px] p-3">
+            <CardHeader className="min-w-0 p-2">
+              <CardTitle className="flex min-w-0 items-start gap-2 text-base leading-snug">
+                <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
+                <span className="min-w-0">Top spots this week</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-0">
-              <ol className="flex flex-col gap-2">
+            <CardContent className="min-w-0 p-2 pt-0">
+              <ol className="flex min-w-0 flex-col gap-2">
                 {topSpots.map((spot) => (
-                  <li key={spot.id}>
+                  <li key={spot.id} className="min-w-0">
                     <button
-                      onClick={() => setSelectedSpotId(spot.id)}
+                      onClick={() => focusSpot(spot.id)}
                       className={cn(
-                        'flex w-full items-center gap-3 rounded-full border px-4 py-2.5 text-sm text-left hover:border-accent transition-colors',
+                        'flex min-w-0 w-full items-start gap-2 rounded-xl border px-3 py-2.5 text-left text-sm transition-colors hover:border-accent',
                         selectedSpotId === spot.id && 'border-accent bg-accent/5'
                       )}
                     >
-                      <span className="w-5 font-bold text-accent">{spot.rank}</span>
-                      <span className="font-medium truncate">{spot.name}</span>
-                      <Badge variant="secondary" className="ml-auto text-xs">
+                      <span className="w-5 shrink-0 font-bold text-accent">{spot.rank}</span>
+                      <span className="min-w-0 flex-1 whitespace-normal break-words font-medium leading-snug">{spot.name}</span>
+                      <Badge variant="secondary" className="ml-auto shrink-0 whitespace-nowrap text-[11px]">
                         {Math.round(spot.effectiveVisits)} visits
                       </Badge>
                     </button>

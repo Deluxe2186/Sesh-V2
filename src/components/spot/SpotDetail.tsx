@@ -3,7 +3,7 @@
 import { Check, ChevronRight, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ConditionsCard from '@/components/spot/ConditionsCard';
 import DevTools from '@/components/spot/DevTools';
 import MobileSessionBar from '@/components/spot/MobileSessionBar';
@@ -11,6 +11,7 @@ import LiveSessionCard from '@/components/spot/LiveSessionCard';
 import RecentSessions from '@/components/spot/RecentSessions';
 import SecurityCard from '@/components/spot/SecurityCard';
 import PhotoPlaceholder from '@/components/PhotoPlaceholder';
+import SpotMapClient from '@/components/SpotMapClient';
 import { useSessions } from '@/lib/sessions';
 import type { Spot } from '@/types';
 
@@ -28,10 +29,21 @@ const BestTimeCard = dynamic(
 export default function SpotDetail({ spot }: { spot: Spot }) {
   const { getLiveCount } = useSessions();
   const [liveCount, setLiveCount] = useState(0);
+  const [selectedMapSpotId, setSelectedMapSpotId] = useState(spot.id);
+  const [focusRequest, setFocusRequest] = useState<{ id: string; request: number } | null>(null);
 
   useEffect(() => {
     setLiveCount(getLiveCount(spot.id));
+    setSelectedMapSpotId(spot.id);
+    setFocusRequest((current) => ({ id: spot.id, request: (current?.request ?? 0) + 1 }));
   }, [getLiveCount, spot.id]);
+
+  function focusSpotOnMap(id: string) {
+    setSelectedMapSpotId(id);
+    setFocusRequest((current) => ({ id, request: (current?.request ?? 0) + 1 }));
+  }
+
+  const mapSpots = useMemo(() => [{ ...spot, liveCount }], [spot, liveCount]);
 
   return (
     <div className="mx-auto max-w-5xl pb-20 lg:pb-0 animate-stagger-fade-in">
@@ -99,6 +111,26 @@ export default function SpotDetail({ spot }: { spot: Spot }) {
           </div>
         </div>
       </div>
+
+      {/* Location map */}
+      <section aria-label={`Map of ${spot.name}`} className="mt-6 overflow-hidden rounded-[12px] border bg-surface p-3">
+        <div className="mb-3 flex items-center justify-between gap-3 px-1">
+          <div>
+            <h2 className="text-sm font-semibold">Find this spot</h2>
+            <p className="text-xs text-muted">{spot.area}, Lagos</p>
+          </div>
+          <span className="text-xs font-medium text-muted">{liveCount} skating now</span>
+        </div>
+        <div className="relative h-[300px] overflow-hidden rounded-[10px] sm:h-[360px] lg:h-[420px]">
+          <SpotMapClient
+            spots={mapSpots}
+            selectedId={selectedMapSpotId}
+            focusRequest={focusRequest}
+            onSelect={focusSpotOnMap}
+            height="100%"
+          />
+        </div>
+      </section>
 
       {/* Two columns */}
       <div className="mt-6 flex flex-col gap-6 lg:flex-row animate-stagger-fade-in">
