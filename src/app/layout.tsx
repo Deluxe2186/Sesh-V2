@@ -91,13 +91,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-theme="light" suppressHydrationWarning>
+    <html lang="en" data-theme="light" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body
-        className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}
-      >
+      <body className="antialiased">
         <AuthProvider>
           <SettingsProvider>
             <SessionProvider>
