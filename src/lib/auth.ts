@@ -1,5 +1,7 @@
 import type { Level, Stance } from '@/types';
 
+export type { Level, Stance };
+
 export interface SeshUser {
   id: string;
   name: string;
