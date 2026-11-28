@@ -289,25 +289,63 @@ export async function getCurrentUser(): Promise<User | null> {
   }
 }
 
+/**
+ * Update user profile in Supabase
+ */
+export async function updateProfile(
+  updates: {
+    name?: string;
+    stance?: 'Regular' | 'Goofy';
+    level?: 'Beginner' | 'Intermediate' | 'Advanced';
+    preferred_obstacles?: string[];
+    share_location?: boolean;
+  }
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = getBrowserClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { success: false, error: 'Must be logged in' };
+
+  const { error } = await supabase
+    .from('profiles')
+    .update(updates)
+    .eq('id', user.id);
+
+  if (error) return { success: false, error: error.message };
+
+  return { success: true };
+}
+
 export interface RecentSessionRow {
   id: string;
   date: string;
   skaterCount: number;
   durationMin: number;
+  spotName?: string;
+  area?: string;
 }
 
 /**
- * Get recent sessions from real session rows
+ * Get recent sessions for a user from real session rows
  */
-export async function getRecentSessions(spotId: string): Promise<RecentSessionRow[]> {
+export async function getRecentSessions(userId: string): Promise<RecentSessionRow[]> {
   const supabase = getBrowserClient();
 
   try {
-    // Get last 20 ended sessions for this spot
+    // Get last 20 ended sessions for this user
     const { data: sessions, error } = await supabase
       .from('sessions')
-      .select('id, started_at, ended_at')
-      .eq('spot_id', spotId)
+      .select(`
+        id,
+        spot_id,
+        started_at,
+        ended_at,
+        spots:spot_id (name, area)
+      `)
+      .eq('user_id', userId)
       .not('ended_at', 'is', null)
       .order('started_at', { ascending: false })
       .limit(20);
@@ -319,11 +357,14 @@ export async function getRecentSessions(spotId: string): Promise<RecentSessionRo
       const started = new Date(s.started_at);
       const ended = new Date(s.ended_at!);
       const durationMin = Math.round((ended.getTime() - started.getTime()) / 60000);
+      const spot = Array.isArray(s.spots) ? s.spots[0] : s.spots;
       return {
         id: s.id,
         date: s.started_at,
         skaterCount: 1, // Each session row is one user's session
         durationMin: Math.max(1, durationMin),
+        spotName: (spot as { name: string; area: string } | null)?.name || 'Unknown Spot',
+        area: (spot as { name: string; area: string } | null)?.area || '',
       };
     });
   } catch {
@@ -466,6 +507,61 @@ interface SubmitSpotOptions {
 }
 
 /**
+ * Validate submission data before sending to server
+ */
+function validateSubmission(submission: SpotSubmission): string | null {
+  if (!submission.name?.trim() || submission.name.length > 100) {
+    return 'Spot name is required (max 100 characters)';
+  }
+  if (!submission.area?.trim() || submission.area.length > 100) {
+    return 'Area is required (max 100 characters)';
+  }
+  if (!submission.description?.trim() || submission.description.length > 2000) {
+    return 'Description is required (max 2000 characters)';
+  }
+  if (!submission.howToFind?.trim() || submission.howToFind.length > 1000) {
+    return 'How to find is required (max 1000 characters)';
+  }
+  if (!submission.securityNote?.trim() || submission.securityNote.length > 1000) {
+    return 'Security note is required (max 1000 characters)';
+  }
+  if (!submission.bestTime?.trim() || submission.bestTime.length > 200) {
+    return 'Best time is required (max 200 characters)';
+  }
+  if (!submission.obstacles || submission.obstacles.length === 0) {
+    return 'At least one obstacle is required';
+  }
+  if (submission.obstacles.length > 10) {
+    return 'Maximum 10 obstacles allowed';
+  }
+  if (submission.lat < -90 || submission.lat > 90) {
+    return 'Invalid latitude';
+  }
+  if (submission.lng < -180 || submission.lng > 180) {
+    return 'Invalid longitude';
+  }
+  if (submission.files) {
+    for (const file of submission.files) {
+      if (file.originalSize > 31457280) { // 30MB
+        return `File ${file.name} exceeds 30MB limit`;
+      }
+      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+        return `File ${file.name} must be an image or video`;
+      }
+      if (file.type.startsWith('video/') && file.duration && file.duration > 3600) {
+        return `Video ${file.name} exceeds 1 hour limit`;
+      }
+    }
+  }
+  return null;
+}
+
+interface SubmitSpotOptions {
+  onProgress?: (progress: UploadProgress[]) => void;
+  onError?: (error: string, failedFile?: string) => void;
+}
+
+/**
  * Submit a spot with media uploads to Supabase
  * - Uploads compressed files to spot-media bucket
  * - Inserts spot_media rows
@@ -485,6 +581,10 @@ export async function submitSpot(
   } = await supabase.auth.getUser();
 
   if (!user) throw new Error('Must be logged in to submit a spot');
+
+  // Client-side validation
+  const validationError = validateSubmission(submission);
+  if (validationError) throw new Error(validationError);
 
   // Keep draft until fully succeeded
   const drafts = readDrafts();

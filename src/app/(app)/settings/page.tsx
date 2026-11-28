@@ -37,6 +37,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { getCachedSpotsCount, clearOfflineCache } from '@/lib/offlineCache';
+import { updateProfile } from '@/lib/api.client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -136,15 +137,17 @@ export default function SettingsPage() {
   const handleSaveProfile = async () => {
     if (!user) return;
     try {
-      // In a real app, this would call an API to update the user profile
-      // For now, we'll just update local state and show success
-      // Update with the edited values
-      setEditableUser({
-        name: newName,
-        email: newEmail,
-      });
-      setIsEditingProfile(false);
-      toast.success('Profile saved');
+      const result = await updateProfile({ name: newName });
+      if (result.success) {
+        setEditableUser({
+          name: newName,
+          email: newEmail,
+        });
+        setIsEditingProfile(false);
+        toast.success('Profile saved');
+      } else {
+        toast.error(result.error || 'Failed to save profile');
+      }
     } catch (error) {
       toast.error('Failed to save profile');
     }
