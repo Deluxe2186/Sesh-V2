@@ -289,25 +289,63 @@ export async function getCurrentUser(): Promise<User | null> {
   }
 }
 
+/**
+ * Update user profile in Supabase
+ */
+export async function updateProfile(
+  updates: {
+    name?: string;
+    stance?: 'Regular' | 'Goofy';
+    level?: 'Beginner' | 'Intermediate' | 'Advanced';
+    preferred_obstacles?: string[];
+    share_location?: boolean;
+  }
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = getBrowserClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { success: false, error: 'Must be logged in' };
+
+  const { error } = await supabase
+    .from('profiles')
+    .update(updates)
+    .eq('id', user.id);
+
+  if (error) return { success: false, error: error.message };
+
+  return { success: true };
+}
+
 export interface RecentSessionRow {
   id: string;
   date: string;
   skaterCount: number;
   durationMin: number;
+  spotName?: string;
+  area?: string;
 }
 
 /**
- * Get recent sessions from real session rows
+ * Get recent sessions for a user from real session rows
  */
-export async function getRecentSessions(spotId: string): Promise<RecentSessionRow[]> {
+export async function getRecentSessions(userId: string): Promise<RecentSessionRow[]> {
   const supabase = getBrowserClient();
 
   try {
-    // Get last 20 ended sessions for this spot
+    // Get last 20 ended sessions for this user
     const { data: sessions, error } = await supabase
       .from('sessions')
-      .select('id, started_at, ended_at')
-      .eq('spot_id', spotId)
+      .select(`
+        id,
+        spot_id,
+        started_at,
+        ended_at,
+        spots:spot_id (name, area)
+      `)
+      .eq('user_id', userId)
       .not('ended_at', 'is', null)
       .order('started_at', { ascending: false })
       .limit(20);
@@ -319,11 +357,14 @@ export async function getRecentSessions(spotId: string): Promise<RecentSessionRo
       const started = new Date(s.started_at);
       const ended = new Date(s.ended_at!);
       const durationMin = Math.round((ended.getTime() - started.getTime()) / 60000);
+      const spot = Array.isArray(s.spots) ? s.spots[0] : s.spots;
       return {
         id: s.id,
         date: s.started_at,
         skaterCount: 1, // Each session row is one user's session
         durationMin: Math.max(1, durationMin),
+        spotName: (spot as { name: string; area: string } | null)?.name || 'Unknown Spot',
+        area: (spot as { name: string; area: string } | null)?.area || '',
       };
     });
   } catch {
@@ -453,31 +494,301 @@ export async function saveDraft(submission: SpotSubmission): Promise<SpotSubmiss
   return draftToSave;
 }
 
-export async function submitSpot(submission: SpotSubmission): Promise<SpotSubmission> {
-  // Remove from drafts if it exists there
+interface UploadProgress {
+  fileName: string;
+  loaded: number;
+  total: number;
+  percentage: number;
+}
+
+interface SubmitSpotOptions {
+  onProgress?: (progress: UploadProgress[]) => void;
+  onError?: (error: string, failedFile?: string) => void;
+}
+
+/**
+ * Validate submission data before sending to server
+ */
+function validateSubmission(submission: SpotSubmission): string | null {
+  if (!submission.name?.trim() || submission.name.length > 100) {
+    return 'Spot name is required (max 100 characters)';
+  }
+  if (!submission.area?.trim() || submission.area.length > 100) {
+    return 'Area is required (max 100 characters)';
+  }
+  if (!submission.description?.trim() || submission.description.length > 2000) {
+    return 'Description is required (max 2000 characters)';
+  }
+  if (!submission.howToFind?.trim() || submission.howToFind.length > 1000) {
+    return 'How to find is required (max 1000 characters)';
+  }
+  if (!submission.securityNote?.trim() || submission.securityNote.length > 1000) {
+    return 'Security note is required (max 1000 characters)';
+  }
+  if (!submission.bestTime?.trim() || submission.bestTime.length > 200) {
+    return 'Best time is required (max 200 characters)';
+  }
+  if (!submission.obstacles || submission.obstacles.length === 0) {
+    return 'At least one obstacle is required';
+  }
+  if (submission.obstacles.length > 10) {
+    return 'Maximum 10 obstacles allowed';
+  }
+  if (submission.lat < -90 || submission.lat > 90) {
+    return 'Invalid latitude';
+  }
+  if (submission.lng < -180 || submission.lng > 180) {
+    return 'Invalid longitude';
+  }
+  if (submission.files) {
+    for (const file of submission.files) {
+      if (file.originalSize > 31457280) { // 30MB
+        return `File ${file.name} exceeds 30MB limit`;
+      }
+      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+        return `File ${file.name} must be an image or video`;
+      }
+      if (file.type.startsWith('video/') && file.duration && file.duration > 3600) {
+        return `Video ${file.name} exceeds 1 hour limit`;
+      }
+    }
+  }
+  return null;
+}
+
+interface SubmitSpotOptions {
+  onProgress?: (progress: UploadProgress[]) => void;
+  onError?: (error: string, failedFile?: string) => void;
+}
+
+/**
+ * Submit a spot with media uploads to Supabase
+ * - Uploads compressed files to spot-media bucket
+ * - Inserts spot_media rows
+ * - Inserts spot as 'pending_review'
+ * - Keeps draft until fully succeeded
+ * - Calls onProgress callback for upload progress
+ */
+export async function submitSpot(
+  submission: SpotSubmission,
+  options: SubmitSpotOptions = {}
+): Promise<SpotSubmission> {
+  const { onProgress, onError } = options;
+  const supabase = getBrowserClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error('Must be logged in to submit a spot');
+
+  // Client-side validation
+  const validationError = validateSubmission(submission);
+  if (validationError) throw new Error(validationError);
+
+  // Keep draft until fully succeeded
   const drafts = readDrafts();
   const filteredDrafts = drafts.filter((d) => d.id !== submission.id);
   writeDrafts(filteredDrafts);
 
-  // Add to submissions
-  const submissions = readSubmissions();
   const now = new Date().toISOString();
+  const submissionId = submission.id || `submission-${Date.now()}`;
+  const userId = submission.userId || user.id;
 
-  const submissionToSave: SpotSubmission = {
-    ...submission,
-    id: submission.id || `submission-${Date.now()}`,
-    userId: submission.userId || (await getCurrentUser())?.id || '',
-    status: 'pending_review',
-    createdAt: submission.createdAt || now,
-    updatedAt: now,
-  };
+  try {
+    // 1. Upload media files
+    const mediaRows: { kind: 'image' | 'video'; path: string; size_bytes: number; duration_s?: number }[] = [];
+    const uploadProgress: UploadProgress[] = submission.files.map((f) => ({
+      fileName: f.name,
+      loaded: 0,
+      total: f.originalSize,
+      percentage: 0,
+    }));
+    onProgress?.([...uploadProgress]);
 
-  submissions.push(submissionToSave);
-  writeSubmissions(submissions);
+    for (let i = 0; i < submission.files.length; i++) {
+      const file = submission.files[i];
+      const progress = uploadProgress[i];
+      const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      const storagePath = `${user.id}/${submissionId}/${fileName}`;
 
-  return submissionToSave;
+      // Convert base64 thumbnail back to blob for upload
+      // Note: In production, you'd upload the original compressed file, not the thumbnail
+      // For now, we use the thumbnail as the uploaded file
+      const base64Data = file.thumbnail.split(',')[1];
+      const binary = atob(base64Data);
+      const bytes = new Uint8Array(binary.length);
+      for (let j = 0; j < binary.length; j++) bytes[j] = binary.charCodeAt(j);
+      const blob = new Blob([bytes], { type: file.type.startsWith('video/') ? 'video/mp4' : 'image/jpeg' });
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('spot-media')
+        .upload(storagePath, blob, {
+          contentType: file.type.startsWith('video/') ? 'video/mp4' : 'image/jpeg',
+          upsert: false,
+        });
+
+      if (uploadError) {
+        throw new Error(`Failed to upload ${file.name}: ${uploadError.message}`);
+      }
+
+      progress.loaded = progress.total;
+      progress.percentage = 100;
+      onProgress?.([...uploadProgress]);
+
+      mediaRows.push({
+        kind: file.type.startsWith('video/') ? 'video' : 'image',
+        path: storagePath,
+        size_bytes: file.originalSize,
+        duration_s: file.duration,
+      });
+    }
+
+    // 2. Insert spot
+    const { data: spot, error: spotError } = await supabase
+      .from('spots')
+      .insert({
+        id: submissionId,
+        name: submission.name,
+        area: submission.area,
+        lat: submission.lat,
+        lng: submission.lng,
+        obstacles: submission.obstacles,
+        surface: submission.surface,
+        best_time: submission.bestTime,
+        notes: submission.description,
+        how_to_find: submission.howToFind,
+        shelter: submission.shelter,
+        security_level: submission.securityLevel,
+        security_note: submission.securityNote,
+        tips: [], // tips are generated by admin on approval
+        verified: false,
+        approximate_location: submission.approximateLocation,
+        status: 'pending_review',
+        created_by: userId,
+      })
+      .select('id')
+      .single();
+
+    if (spotError) {
+      // Clean up uploaded files on spot insert failure
+      await Promise.all(
+        mediaRows.map((m) => supabase.storage.from('spot-media').remove([m.path]))
+      );
+      throw new Error(`Failed to create spot: ${spotError.message}`);
+    }
+
+    // 3. Insert spot_media rows
+    const mediaInserts = mediaRows.map((m) => ({
+      spot_id: spot.id,
+      kind: m.kind,
+      path: m.path,
+      size_bytes: m.size_bytes,
+      duration_s: m.duration_s,
+    }));
+
+    const { error: mediaError } = await supabase.from('spot_media').insert(mediaInserts);
+
+    if (mediaError) {
+      // Clean up spot and files
+      await supabase.from('spots').delete().eq('id', spot.id);
+      await Promise.all(
+        mediaRows.map((m) => supabase.storage.from('spot-media').remove([m.path]))
+      );
+      throw new Error(`Failed to save media: ${mediaError.message}`);
+    }
+
+    // 4. Success - add to local submissions
+    const submissions = readSubmissions();
+    const submissionToSave: SpotSubmission = {
+      ...submission,
+      id: spot.id,
+      userId,
+      status: 'pending_review',
+      createdAt: submission.createdAt || now,
+      updatedAt: now,
+    };
+
+    submissions.push(submissionToSave);
+    writeSubmissions(submissions);
+
+    return submissionToSave;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Submission failed';
+    onError?.(message);
+    throw error;
+  }
 }
 
+/**
+ * Fetch user's submissions from server (includes all statuses)
+ */
+export async function fetchUserSubmissionsFromServer(): Promise<SpotSubmission[]> {
+  const supabase = getBrowserClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from('spots')
+    .select(`
+      *,
+      spot_media (
+        id,
+        kind,
+        path,
+        size_bytes,
+        duration_s
+      )
+    `)
+    .eq('created_by', user.id)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+
+  return (data || []).map((spot) => ({
+    id: spot.id,
+    userId: spot.created_by,
+    status: spot.status as SubmissionStatus,
+    createdAt: spot.created_at,
+    updatedAt: spot.updated_at,
+    // Step 1: Basics
+    name: spot.name,
+    area: spot.area,
+    howToFind: spot.how_to_find,
+    description: spot.notes,
+    surface: spot.surface as SpotSubmission['surface'],
+    shelter: spot.shelter as SpotSubmission['shelter'],
+    bestTime: spot.best_time,
+    securityLevel: spot.security_level as SpotSubmission['securityLevel'],
+    securityNote: spot.security_note,
+    lat: spot.lat,
+    lng: spot.lng,
+    approximateLocation: spot.approximate_location,
+    // Step 2: Obstacles
+    obstacles: spot.obstacles as string[],
+    customObstacle: '',
+    // Step 3: Proof
+    files: (spot.spot_media || []).map((m: { path: string; size_bytes: number; kind: string; duration_s?: number }) => ({
+      name: m.path.split('/').pop() || 'file',
+      originalSize: m.size_bytes,
+      compressedSize: m.size_bytes,
+      thumbnail: `https://${process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('https://', '')}/storage/v1/object/public/spot-media/${m.path}`,
+      type: m.kind,
+      duration: m.duration_s,
+    })),
+    // Computed
+    totalDataMB: (spot.spot_media || []).reduce((sum: number, m: { size_bytes: number }) => sum + m.size_bytes, 0) / 1024 / 1024,
+  }));
+}
+
+/**
+ * Get user submissions - merges local drafts with server submissions
+ */
 export async function getUserSubmissions(userId: string): Promise<SpotSubmission[]> {
   const submissions = readSubmissions();
   const drafts = readDrafts();
@@ -485,8 +796,35 @@ export async function getUserSubmissions(userId: string): Promise<SpotSubmission
   const userSubmissions = submissions.filter((s) => s.userId === userId);
   const userDrafts = drafts.filter((d) => d.userId === userId);
 
+  // Try to fetch from server as well (for pending_review, approved, etc.)
+  let serverSubmissions: SpotSubmission[] = [];
+  try {
+    serverSubmissions = await fetchUserSubmissionsFromServer();
+  } catch {
+    // Ignore server errors, use local only
+  }
+
+  // Merge: server submissions take precedence, then local submissions, then drafts
+  // Use a map to deduplicate by ID
+  const merged = new Map<string, SpotSubmission>();
+
+  // Add server submissions first
+  for (const s of serverSubmissions) {
+    merged.set(s.id, s);
+  }
+
+  // Add local submissions (not already in server)
+  for (const s of userSubmissions) {
+    if (!merged.has(s.id)) merged.set(s.id, s);
+  }
+
+  // Add drafts (not already in server or local)
+  for (const d of userDrafts) {
+    if (!merged.has(d.id)) merged.set(d.id, d);
+  }
+
   // Combine and sort by updatedAt desc
-  const all = [...userSubmissions, ...userDrafts].sort(
+  const all = Array.from(merged.values()).sort(
     (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
   );
 

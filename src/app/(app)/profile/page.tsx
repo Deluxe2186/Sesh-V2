@@ -5,7 +5,7 @@ import { Edit, MapPin, Clock, Users, Plus, Check, Star, Target } from 'lucide-re
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import { useSettings } from '@/lib/settings';
-import { getSpots, getCurrentUser } from '@/lib/api.client';
+import { getSpots, getCurrentUser, updateProfile, getRecentSessions } from '@/lib/api.client';
 import type { Spot, Obstacle } from '@/types';
 import {
   Card,
@@ -123,14 +123,18 @@ export default function ProfilePage() {
         setRecommendedSpots([]);
       }
 
-      // Generate mock recent sessions
-      const mockSessions = [
-        { spotName: 'National Stadium', area: 'Surulere', date: '2 days ago', hours: 2.5 },
-        { spotName: 'Church Street', area: 'Alapere', date: '5 days ago', hours: 1.5 },
-        { spotName: 'Waf Skatepark', area: 'Lagos Island', date: '1 week ago', hours: 3 },
-        { spotName: 'Ebute Metta Station', area: 'Ebute Metta', date: '2 weeks ago', hours: 2 },
-      ];
-      setRecentSessions(mockSessions);
+      // Fetch real recent sessions from Supabase
+      if (fullUserData) {
+        const recentSessionsData = await getRecentSessions(fullUserData.id);
+        setRecentSessions(
+          recentSessionsData.map((s) => ({
+            spotName: s.spotName || 'Unknown Spot',
+            area: s.area || '',
+            date: new Date(s.date).toLocaleDateString(),
+            hours: s.durationMin / 60,
+          }))
+        );
+      }
 
       // Load notification preferences from localStorage
       if (typeof window !== 'undefined') {
@@ -144,10 +148,21 @@ export default function ProfilePage() {
   }, [user]);
 
   const handleSaveProfile = async () => {
-    // In a real app, this would call an API to update the user profile
-    // For now, we'll just show a toast and exit edit mode
-    toast.success('Profile saved');
-    setIsEditing(false);
+    const result = await updateProfile({
+      name: editableUser.name,
+      stance: editableUser.stance,
+      level: editableUser.level,
+      preferred_obstacles: editableUser.preferredObstacles,
+    });
+    if (result.success) {
+      toast.success('Profile saved');
+      // Refresh user data
+      const freshUser = await getCurrentUser();
+      if (freshUser) setFullUser(freshUser);
+      setIsEditing(false);
+    } else {
+      toast.error(result.error || 'Failed to save profile');
+    }
   };
 
   const handleCancelEdit = () => {

@@ -17,7 +17,7 @@ export default function DevTools({ spotId }: { spotId: string }) {
       <div className="flex gap-2 animate-stagger-fade-in">
         <button
           type="button"
-          onClick={() => addMockMember(spotId)}
+          onClick={() => addMockMember?.(spotId)}
           className="inline-flex items-center gap-1.5 rounded-full border bg-background px-3 py-1.5 text-xs font-medium hover:border-accent hover:bg-accent/5 hover:text-accent press-scale transition-all duration-fast stagger-1 animate-fade-in-up"
         >
           <UserPlus className="h-3.5 w-3.5 transition-transform duration-fast hover:scale-110" />
@@ -25,7 +25,7 @@ export default function DevTools({ spotId }: { spotId: string }) {
         </button>
         <button
           type="button"
-          onClick={() => removeMockMember(spotId)}
+          onClick={() => removeMockMember?.(spotId)}
           className="inline-flex items-center gap-1.5 rounded-full border bg-background px-3 py-1.5 text-xs font-medium hover:border-accent hover:bg-accent/5 hover:text-accent press-scale transition-all duration-fast stagger-2 animate-fade-in-up"
         >
           <UserMinus className="h-3.5 w-3.5 transition-transform duration-fast hover:scale-110" />
