@@ -2,102 +2,111 @@
 
 import type { Spot } from '@/types';
 
-const OFFLINE_CACHE_KEY = 'sesh-offline-spots';
-const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+const CACHE_KEY = 'sesh-spots-cache';
+const CACHE_TIMESTAMP_KEY = 'sesh-spots-cache-timestamp';
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-interface CacheEntry {
+interface CachedSpots {
   spots: Spot[];
   timestamp: number;
 }
 
 /**
- * Save spots to offline cache (localStorage)
+ * Save spots to localStorage cache
  */
-export function saveSpots(spots: Spot[]): void {
+export function cacheSpots(spots: Spot[]): void {
   if (typeof window === 'undefined') return;
   try {
-    const entry: CacheEntry = {
-      spots,
-      timestamp: Date.now(),
-    };
-    window.localStorage.setItem('sesh-offline-spots', JSON.stringify(entry));
-  } catch (error) {
-    console.warn('Failed to save spots to offline cache:', error);
+    window.localStorage.setItem(CACHE_KEY, JSON.stringify(spots));
+    window.localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+  } catch {
+    // Storage unavailable, ignore
   }
 }
 
 /**
- * Get spots from offline cache
- * Returns null if cache is empty or expired
+ * Get cached spots if they exist and are not stale
  */
 export function getCachedSpots(): Spot[] | null {
   if (typeof window === 'undefined') return null;
   try {
-    const raw = window.localStorage.getItem('sesh-offline-spots');
-    if (!raw) return null;
+    const raw = window.localStorage.getItem(CACHE_KEY);
+    const timestampRaw = window.localStorage.getItem(CACHE_TIMESTAMP_KEY);
+    if (!raw || !timestampRaw) return null;
 
-    const entry: CacheEntry = JSON.parse(raw);
-
-    // Check if cache is expired
-    if (Date.now() - entry.timestamp > CACHE_TTL) {
-      window.localStorage.removeItem('sesh-offline-spots');
+    const timestamp = parseInt(timestampRaw, 10);
+    if (Date.now() - timestamp > CACHE_TTL_MS) {
+      // Cache expired
+      clearSpotsCache();
       return null;
     }
 
-    return entry.spots;
-  } catch (error) {
-    console.warn('Failed to read offline cache:', error);
+    return JSON.parse(raw) as Spot[];
+  } catch {
     return null;
   }
 }
 
 /**
- * Get the number of cached spots
+ * Clear the spots cache
  */
-export function getCachedSpotsCount(): number {
-  const cached = getCachedSpots();
-  return cached?.length ?? 0;
+export function clearSpotsCache(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.removeItem(CACHE_KEY);
+    window.localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+  } catch {
+    // Ignore
+  }
 }
 
 /**
- * Clear the offline cache
+ * Check if we're online
+ */
+export function isOnline(): boolean {
+  if (typeof window === 'undefined') return true;
+  return navigator.onLine;
+}
+
+/**
+ * Subscribe to online/offline events
+ */
+export function subscribeToOnlineStatus(callback: (online: boolean) => void): () => void {
+  if (typeof window === 'undefined') return () => {};
+
+  const handleOnline = () => callback(true);
+  const handleOffline = () => callback(false);
+
+  window.addEventListener('online', handleOnline);
+  window.addEventListener('offline', handleOffline);
+
+  return () => {
+    window.removeEventListener('online', handleOnline);
+    window.removeEventListener('offline', handleOffline);
+  };
+}
+
+/**
+ * Get the count of cached spots
+ */
+export function getCachedSpotsCount(): number {
+  const cached = getCachedSpots();
+  return cached ? cached.length : 0;
+}
+
+/**
+ * Clear all offline caches (spots, drafts, submissions, reports, sessions)
  */
 export function clearOfflineCache(): void {
   if (typeof window === 'undefined') return;
   try {
-    window.localStorage.removeItem('sesh-offline-spots');
-  } catch (error) {
-    console.warn('Failed to clear offline cache:', error);
-  }
-}
-
-/**
- * Get the cache size in bytes (approximate)
- */
-export function getCacheSize(): number {
-  if (typeof window === 'undefined') return 0;
-  try {
-    const raw = window.localStorage.getItem('sesh-offline-spots');
-    return raw ? raw.length : 0;
+    window.localStorage.removeItem('sesh-spots-cache');
+    window.localStorage.removeItem('sesh-spots-cache-timestamp');
+    window.localStorage.removeItem('sesh-spot-drafts');
+    window.localStorage.removeItem('sesh-spot-submissions');
+    window.localStorage.removeItem('sesh-security-reports');
+    window.localStorage.removeItem('sesh-sessions');
   } catch {
-    return 0;
+    // Ignore
   }
-}
-
-/**
- * Format cache size for display
- */
-export function formatCacheSize(bytes: number): string {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-}
-
-/**
- * Check if cache has valid data
- */
-export function hasValidCache(): boolean {
-  return getCachedSpots() !== null;
 }

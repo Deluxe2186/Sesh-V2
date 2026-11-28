@@ -5,7 +5,7 @@ import { Edit, MapPin, Clock, Users, Plus, Check, Star, Target } from 'lucide-re
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import { useSettings } from '@/lib/settings';
-import { getSpots, getCurrentUser } from '@/lib/api';
+import { getSpots, getCurrentUser } from '@/lib/api.client';
 import type { Spot, Obstacle } from '@/types';
 import {
   Card,
@@ -112,12 +112,16 @@ export default function ProfilePage() {
       setFullUser(fullUserData);
 
       // Generate recommended spots based on user's preferred obstacles
-      const userSpots = spotsData.filter((spot) =>
-        spot.obstacles.some((obs) => fullUserData.preferredObstacles?.includes(obs))
-      );
-      // Filter out spots the user has "visited" (simulated - using spots from submissions or recent sessions)
-      // For now, just take first 3 matching spots
-      setRecommendedSpots(userSpots.slice(0, 3));
+      if (fullUserData) {
+        const userSpots = spotsData.filter((spot) =>
+          spot.obstacles.some((obs) => fullUserData.preferredObstacles?.includes(obs))
+        );
+        // Filter out spots the user has "visited" (simulated - using spots from submissions or recent sessions)
+        // For now, just take first 3 matching spots
+        setRecommendedSpots(userSpots.slice(0, 3));
+      } else {
+        setRecommendedSpots([]);
+      }
 
       // Generate mock recent sessions
       const mockSessions = [

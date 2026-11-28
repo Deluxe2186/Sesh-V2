@@ -1,46 +1,45 @@
 ## Summary
 
-This PR establishes the Supabase backend foundation for Sesh-V2, replacing the localStorage-based auth and data layer with a proper PostgreSQL database, Row Level Security, and SSR-compatible auth.
+This PR implements Supabase Auth in `src/lib/auth.ts`, replacing the localStorage-based auth while preserving all existing function signatures and the `SeshUser` shape. The `AuthProvider`, `/login`, `/signup`, `AppChrome`, and settings continue working without changes.
 
 ## Changes
 
-### Supabase Clients (SSR-compatible)
-- `src/lib/supabase/client.ts` — Browser client using `@supabase/ssr`
-- `src/lib/supabase/server.ts` — Server Component client using Next.js 13.5 `cookies()` API
-- `src/lib/supabase/middleware.ts` — Middleware client helper for session refresh
+### `src/lib/auth.ts` - Rewritten with Supabase Auth
+- **Deleted**: Plaintext-password logic, `sesh-users` and `sesh-session` localStorage keys
+- **Added**: Legacy key cleanup on first run (removes `sesh-users` and `sesh-session`)
+- **`signUp(input)`**: Sends `name`, `handle`, `shareLocation` as user metadata; auto-signs-in after registration
+- **`logIn(email, password)`**: Uses Supabase `signInWithPassword`
+- **`logOut()`**: Calls Supabase `signOut`
+- **`getUser()`**: Returns current user from Supabase session
+- **Error messages** (matching requirements):
+  - `"That username is already taken."` — handle uniqueness
+  - `"An account with that email already exists."` — duplicate emails
+  - `"Wrong email or password."` — invalid credentials
+- **Singleton Supabase client** for client-side use
 
-### Middleware & Auth
-- `src/middleware.ts` — Refreshes auth session on every request, protects routes:
-  - Protected: `/profile`, `/settings`, `/add-spot`, `/spot/*` → redirect to `/login`
-  - Auth pages: `/login`, `/signup` → redirect to `/explore` if authenticated
-- `src/components/AuthProvider.tsx` — Updated to use Supabase auth:
-  - `signUp` now auto-signs-in after registration (fixes email confirmation redirect issue)
-  - `logIn` / `logOut` / session persistence via `onAuthStateChange`
+### `src/components/AuthProvider.tsx` - Simplified
+- Now uses `signUp`, `logIn`, `logOut`, `getUser` from `@/lib/auth`
+- Removed direct Supabase client usage and `onAuthStateChange` listener
+- Initial user loaded via `getUser()` on mount
 
-### Database Schema (`supabase/migrations/0001_init.sql`)
-Tables mapped to `src/types/index.ts`:
-- `profiles` — Maps to `auth.users`, includes `handle`, `stance`, `level`, `preferred_obstacles`, `share_location`
-- `spots` — Full spot data with `status` enum (`pending_review`/`approved`/`rejected`), `verified`, `approximate_location`
-- `spot_media` — Images/videos with storage paths
-- `security_reports` — User reports on spots
-- `sessions` — Live skate sessions with `ended_at` null for active sessions
+### Email Confirmation Callback Route
+- **`src/app/(marketing)/auth/callback/page.tsx`** — Handles Supabase email confirmation
+- Exchanges code for session, then redirects to `/explore` (or `next` param)
 
-**Views & Functions:**
-- `spot_live_counts` — Live session count per spot
-- `spot_stats(spot_id)` — Returns `weeklyVisits`, `lastActive`, `busyByTime`, `busyByDay` computed from sessions
+## Supabase Dashboard Settings Required
 
-### Row Level Security
-- Anyone reads `approved` spots, live counts, stats
-- Users read/write own profile
-- Users insert spots as `pending_review` only (cannot set `verified` or `status='approved'`)
-- Users insert/update/delete own sessions, reports, media
-- Client can never set `spots.status` or `verified`
+### Authentication → Email Templates
+- **Confirm signup**: Ensure the redirect URL points to your callback route:
+  - Local: `http://localhost:3000/auth/callback?next=/explore`
+  - Production: `https://your-domain.com/auth/callback?next=/explore`
 
-### Seed Data
-- `supabase/seed.sql` — 8 Lagos spots with security reports (status `approved`, verified as in original seed)
+### Authentication → URL Configuration
+- **Site URL**: `http://localhost:3000` (local) / `https://your-domain.com` (production)
+- **Redirect URLs**: Add both callback URLs above
 
-### Documentation
-- `README.md` — Supabase setup instructions, migration/seed commands, project structure
+### Email Confirmation (choose one)
+- **ON (recommended for production)**: Users must confirm email before accessing the app. The callback route handles the confirmation flow.
+- **OFF (easier for local dev)**: Users can sign in immediately after signup. No email confirmation needed.
 
 ## Testing
 - `npm run typecheck` ✅
@@ -48,9 +47,9 @@ Tables mapped to `src/types/index.ts`:
 - `npm run build` ✅
 
 ## Notes
-- All existing function signatures, context APIs, and types in `src/types/index.ts` preserved
-- Offline cache, low-data mode, mobile responsiveness unchanged
+- All existing function signatures, context APIs, and `SeshUser` type preserved
+- Guests can still browse `/explore`, `/heatmap`, `/spot/[id]`
+- Protected actions (start session, submit spot, profile, security reports) will need the auth gate dialog in follow-up work
 - No service role key used; all access via publishable key + RLS
-- Never commits secrets
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)

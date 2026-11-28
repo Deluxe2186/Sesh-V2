@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
-import { saveDraft, submitSpot, getDraft } from '@/lib/api';
+import { saveDraft, submitSpot, getDraft } from '@/lib/api.client';
 import { SpotSubmission, SubmissionFile } from '@/types';
 import { toast } from 'sonner';
 import ProgressIndicator from './ProgressIndicator';
